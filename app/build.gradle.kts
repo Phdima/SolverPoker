@@ -2,8 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.dagger.hilt.android")
     kotlin("kapt")
-    id ("com.google.dagger.hilt.android") version ("2.48.1") apply false
 }
 
 android {
@@ -46,6 +46,7 @@ dependencies {
     // moshi
     implementation(libs.moshi.kotlin)
     implementation(libs.moshi.adapters)
+    implementation(libs.androidx.compose.material)
     kapt(libs.moshi.kotlin.codegen)
 
     // Для работы с JSON в assets
@@ -53,6 +54,7 @@ dependencies {
 
     //hilt
     implementation (libs.hilt.android)
+    kapt(libs.dagger.hilt.compiler)
     implementation (libs.androidx.hilt.navigation.compose)
 
     //core

@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.solverpoker.presentation.screens.PreflopChartScreen
 import com.example.solverpoker.presentation.theme.SolverPokerTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -23,7 +24,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SolverPokerTheme {
-
+                PreflopChartScreen()
             }
         }
     }
