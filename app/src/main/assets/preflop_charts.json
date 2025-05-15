@@ -448,7 +448,7 @@
         "FOLD": ["72o-32o", "J3s", "T3s"]
       }
     },
-    "vsThreeBet": [],
+    "vsThreeBet": {},
     "vsFourBet": {
       "UTG": {
         "PUSH": ["AA", "KK"],
@@ -471,6 +471,6 @@
         "FOLD": ["AKs", "QQ"]
       }
     },
-    "vsPush": []
+    "vsPush": {}
   }
 ]
