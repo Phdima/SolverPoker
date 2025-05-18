@@ -1,10 +1,11 @@
 package com.example.solverpoker.data
 
 class RangeParser {
-    private val pairRegex = Regex("(\\d{2}|[TJQKA]{2})\\+?")                    // 22+, TT+
+    private val pairRegex = Regex("(\\d{2}|[TJQKA]{2})\\+?")             // 22+, TT+
     private val hyphenatedPairRegex = Regex("([2-9TJQKA]{2})-([2-9TJQKA]{2})")  // 22-AA
-    private val suitedRegex = Regex("([2-9TJQKA])([2-9TJQKA])s\\+?")            // 78s+, ATs+
-    private val offsuitRegex = Regex("([2-9TJQKA])([2-9TJQKA])o\\+?")           // KQo+, J9o+
+    private val suitedRegex = Regex("([TJQKA2-9])([TJQKA2-9])s\\+?")         // 78s+, ATs+
+    private val offsuitRegex = Regex("([TJQKA2-9])([TJQKA2-9])o\\+?")          // KQo+, J9o+
+
 
     private val ranks = listOf("2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A")
 
@@ -25,14 +26,23 @@ class RangeParser {
     }
 
     private fun handlePairs(part: String, hands: MutableSet<String>) {
-        val rank = part.substring(0, 2)
-        val startRank = rank[0].toString()
+        val hasPlus = part.endsWith("+") // Добавляем проверку на плюс
+        val basePair = part.removeSuffix("+")
+
+        if (basePair.length != 2 || basePair[0] != basePair[1]) return
+
+        val startRank = basePair[0].toString()
         val startIndex = ranks.indexOf(startRank)
 
-        if (startIndex != -1) {
-            for (i in startIndex until ranks.size) {
-                hands.add("${ranks[i]}${ranks[i]}")
-            }
+        if (startIndex == -1) return
+
+        // Определяем конечный индекс
+        val endIndex = if (hasPlus) ranks.size - 1 else startIndex
+
+        // Генерируем все пары от startIndex до endIndex
+        for (i in startIndex..endIndex) {
+            val pair = ranks[i] + ranks[i]
+            hands.add(pair)
         }
     }
 
@@ -57,44 +67,69 @@ class RangeParser {
 
 
     private fun handleSuited(part: String, hands: MutableSet<String>) {
+        val hasPlus = part.endsWith("+")
         val (highCard, lowCard) = parseHandComponents(part)
-        generateCombos(highCard, lowCard, hands, isSuited = true)
+        generateSuitCombos(highCard, lowCard, hands, hasPlus)
     }
 
     private fun handleOffsuit(part: String, hands: MutableSet<String>) {
+        val hasPlus = part.endsWith("+")
         val (highCard, lowCard) = parseHandComponents(part)
-        generateCombos(highCard, lowCard, hands, isSuited = false)
+        generateOffsuitCombos(highCard, lowCard, hands, hasPlus)
     }
 
 
 
     private fun parseHandComponents(part: String): Pair<String, String> {
-        val cards = part.replace("[+o]".toRegex(), "").take(2)
-        val card1 = cards[0].toString()
-        val card2 = cards[1].toString()
-
-        val index1 = ranks.indexOf(card1)
-        val index2 = ranks.indexOf(card2)
-        return if (index1 >= index2) card1 to card2 else card2 to card1
+        val cleanPart = part.replace("[+os]".toRegex(), "")
+        val sorted = cleanPart.toList().sortedByDescending { ranks.indexOf(it.toString()) }
+        return sorted[0].toString() to sorted[1].toString()
     }
 
-    private fun generateCombos(
+
+    private fun generateSuitCombos(
         highCard: String,
         lowCard: String,
         hands: MutableSet<String>,
-        isSuited: Boolean
+        hasPlus: Boolean
     ) {
-        val suffix = if (isSuited) "s" else "o"
         val highIndex = ranks.indexOf(highCard)
         val lowIndex = ranks.indexOf(lowCard)
 
-        // Генерируем все комбинации от lowCard до highCard
-        for (i in lowIndex until highIndex + 1) {
-            for (j in i + 1 until ranks.size) {
-                val hand = "${ranks[j]}${ranks[i]}${suffix}"
-                hands.add(hand)
-            }
+
+        if (!hasPlus) {
+            hands.add("${highCard}${lowCard}s")
+            return
+        }
+
+        for (i in lowIndex..highIndex) {
+            val currentLow = ranks[i]
+            if (currentLow == highCard) continue
+            hands.add("${highCard}${currentLow}s")
         }
     }
+
+    private fun generateOffsuitCombos(
+        highCard: String,
+        lowCard: String,
+        hands: MutableSet<String>,
+        hasPlus: Boolean
+    ) {
+        val highIndex = ranks.indexOf(highCard)
+        val lowIndex = ranks.indexOf(lowCard)
+
+
+        if (!hasPlus) {
+            hands.add("${highCard}${lowCard}o")
+            return
+        }
+
+        for (i in lowIndex..highIndex) {
+            val currentLow = ranks[i]
+            if (currentLow == highCard) continue
+            hands.add("${highCard}${currentLow}o")
+        }
+    }
+
 
 }

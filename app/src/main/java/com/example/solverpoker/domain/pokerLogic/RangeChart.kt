@@ -7,11 +7,11 @@ import com.squareup.moshi.ToJson
 @JsonClass(generateAdapter = true)
 data class RangeChart(
     val position: Position,
-    val openRaise: List<String>?,
-    val vsOpenRaise: Map<Position, Map<Action, List<String>>>?,
-    val vsThreeBet: Map<Position, Map<Action, List<String>>>?,
-    val vsFourBet: Map<Position, Map<Action, List<String>>>?,
-    val vsPush: Map<Position, Map<Action, List<String>>>?,
+    val openRaise: List<String>? = emptyList(),
+    val vsOpenRaise: Map<Position, Map<Action, List<String>>>? = emptyMap(),
+    val vsThreeBet: Map<Position, Map<Action, List<String>>>? = emptyMap(),
+    val vsFourBet: Map<Position, Map<Action, List<String>>>? = emptyMap(),
+    val vsPush: Map<Position, Map<Action, List<String>>>? = emptyMap(),
 )
 
 class PositionAdapter {

@@ -2,16 +2,16 @@
   {
     "position": "UTG",
     "openRaise": [
-      "22+", "AKs", "AQs", "AJs", "KQs", "QJs", "JTs", "T9s"
+      "22+", "ATs+", "KTs+", "QTs+", "JTs", "T9s", "AQo+"
     ],
     "vsOpenRaise": {},
     "vsThreeBet": {
       "MP": {
         "CALL": [
-          "TT-QQ", "AKs", "AQs"
+          "TT-QQ",  "AQs"
         ],
         "FOUR_BET": [
-          "AA", "KK", "AKo"
+          "AA", "KK", "AKo","AKs"
         ],
         "FOLD": [
           "22-99", "AJs", "KQs"
@@ -19,7 +19,7 @@
       },
       "CO": {
         "CALL": [
-          "JJ+", "AKs", "AQs"
+          "AA", "AKs", "AQs"
         ],
         "FOUR_BET": [
           "AA", "KK", "AKs"

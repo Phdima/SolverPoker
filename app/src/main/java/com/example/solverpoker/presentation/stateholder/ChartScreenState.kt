@@ -9,6 +9,7 @@ data class ChartScreenState(
     val heroPosition: Position = Position.UTG,
     val selectedAction: DefenseAction = DefenseAction.RAISE,
     val opponentPosition: Position? = null,
+    val selectedResponseAction: Action? = null,
     val charts: Map<Position, RangeChart> = emptyMap(),
     val isLoading: Boolean = true,
     val error: String? = null

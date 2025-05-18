@@ -1,6 +1,7 @@
 package com.example.solverpoker
 
 import android.app.Application
+import com.example.solverpoker.data.RangeParser
 import com.example.solverpoker.data.repository.ChartRepositoryImpl
 import com.example.solverpoker.domain.repository.ChartRepository
 import com.squareup.moshi.Moshi
@@ -15,6 +16,6 @@ class PokerApp : Application() {
             .add(KotlinJsonAdapterFactory())
             .build()
 
-        ChartRepositoryImpl(applicationContext, moshi)
+        ChartRepositoryImpl(applicationContext, moshi, RangeParser())
     }
 }

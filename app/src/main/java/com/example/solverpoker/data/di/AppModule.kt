@@ -1,6 +1,7 @@
 package com.example.solverpoker.data.di
 
 import android.content.Context
+import com.example.solverpoker.data.RangeParser
 import com.example.solverpoker.data.repository.ChartRepositoryImpl
 import com.example.solverpoker.domain.repository.ChartRepository
 import com.squareup.moshi.Moshi
@@ -22,7 +23,7 @@ object AppModule {
         @ApplicationContext context: Context,
         moshi: Moshi
     ): ChartRepository {
-        return ChartRepositoryImpl(context, moshi)
+        return ChartRepositoryImpl(context, moshi, rangeParser = RangeParser())
     }
 
     @Provides
