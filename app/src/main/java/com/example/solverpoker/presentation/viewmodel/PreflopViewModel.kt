@@ -8,11 +8,11 @@ import com.example.solverpoker.domain.pokerLogic.Action
 import com.example.solverpoker.domain.pokerLogic.DefenseAction
 import com.example.solverpoker.domain.pokerLogic.Position
 import com.example.solverpoker.domain.repository.ChartRepository
+import com.example.solverpoker.presentation.components.HandAction
 import com.example.solverpoker.presentation.stateholder.ChartScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
 
 
 @HiltViewModel
@@ -36,30 +36,45 @@ class ChartsViewModel @Inject constructor(
     }
 
     fun selectHeroPosition(position: Position) {
-        _state.value = _state.value.copy(heroPosition  = position)
+        _state.value = _state.value.copy(heroPosition = position)
     }
 
-    fun getHandsForMatrix(state: ChartScreenState): List<String> {
+
+    fun getHandsForMatrix(state: ChartScreenState): List<HandAction> {
         val chart = state.charts[state.heroPosition] ?: return emptyList()
 
-        return when(state.selectedAction) {
+        return when (state.selectedAction) {
+
             DefenseAction.RAISE -> {
-                chart.openRaise
-                    ?: emptyList()
+                chart.openRaise?.map { HandAction(it, Action.RAISE) } ?: emptyList()
             }
+
+            DefenseAction.VS_RAISE -> {
+                state.opponentPosition?.let { pos ->
+                    chart.vsOpenRaise?.get(pos)?.flatMap { (action, hands) ->
+                        hands.map { HandAction(it, action) }
+                    } ?: emptyList()
+                } ?: emptyList()
+            }
+
             DefenseAction.VS_3BET -> {
-                chart.vsThreeBet
-                    ?.flatMap { it.value[Action.THREE_BET] ?: emptyList() }
-                    ?: emptyList()
+                state.opponentPosition?.let { pos ->
+                    chart.vsThreeBet?.get(pos)?.flatMap { (action, hands) ->
+                        hands.map { HandAction(it, action) }
+                    } ?: emptyList()
+                } ?: emptyList()
             }
+
+
             DefenseAction.VS_4BET -> {
-                chart.vsFourBet
-                    ?.flatMap { it.value[Action.CALL] ?: emptyList() }
-                    ?: emptyList()
+                state.opponentPosition?.let { pos ->
+                    chart.vsFourBet?.get(pos)?.flatMap { (action, hands) ->
+                        hands.map { HandAction(it, action) }
+                    } ?: emptyList()
+                } ?: emptyList()
             }
         }
     }
-
 
 
     private fun loadCharts() {

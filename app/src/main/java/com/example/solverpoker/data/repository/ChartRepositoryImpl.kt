@@ -2,6 +2,8 @@ package com.example.solverpoker.data.repository
 
 import android.content.Context
 import android.util.Log
+import com.example.solverpoker.data.RangeParser
+import com.example.solverpoker.domain.pokerLogic.Action
 import com.example.solverpoker.domain.pokerLogic.Position
 import com.example.solverpoker.domain.pokerLogic.RangeChart
 import com.example.solverpoker.domain.repository.ChartRepository
@@ -15,6 +17,7 @@ import kotlinx.coroutines.runBlocking
 class ChartRepositoryImpl(
     private val context: Context,
     private val moshi: Moshi,
+    private val rangeParser: RangeParser,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ChartRepository {
 
@@ -27,7 +30,7 @@ class ChartRepositoryImpl(
     }
 
     override suspend fun getChart(position: Position): RangeChart? {
-        return chartsCache[position]
+        return chartsCache[position]?.let { parseChart(it) }
     }
 
     private suspend fun loadCharts() {
@@ -46,6 +49,28 @@ class ChartRepositoryImpl(
             }
         } catch (e: Exception) {
             Log.e("ChartRepository", "Error loading charts", e)
+        }
+    }
+
+    private fun parseChart(chart: RangeChart): RangeChart {
+        return chart.copy(
+            openRaise = chart.openRaise.parseRanges(),
+            vsOpenRaise = chart.vsOpenRaise?.parseNestedRanges(),
+            vsThreeBet = chart.vsThreeBet?.parseNestedRanges(),
+            vsFourBet = chart.vsFourBet?.parseNestedRanges(),
+            vsPush = chart.vsPush?.parseNestedRanges()
+        )
+    }
+
+    private fun List<String>?.parseRanges(): List<String>? {
+        return this?.flatMap { rangeParser.parse(it) }
+    }
+
+    private fun Map<Position, Map<Action, List<String>>>?.parseNestedRanges(): Map<Position, Map<Action, List<String>>>? {
+        return this?.mapValues { (_, actions) ->
+            actions.mapValues { (_, ranges) ->
+                ranges.flatMap { rangeParser.parse(it) }
+            }
         }
     }
 }

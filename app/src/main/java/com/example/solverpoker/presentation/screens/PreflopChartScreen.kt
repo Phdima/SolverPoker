@@ -47,7 +47,7 @@ fun PreflopChartScreen(viewModel: ChartsViewModel = hiltViewModel()) {
         ) {
 
             PokerHandMatrix(
-                hands = hands,
+                handActions = hands,
                 modifier = Modifier
             )
 

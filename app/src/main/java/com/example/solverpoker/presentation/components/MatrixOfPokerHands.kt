@@ -4,6 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -18,18 +21,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.solverpoker.domain.pokerLogic.Action
 
+
+data class HandAction(
+    val hand: String,
+    val action: Action? = null
+)
 
 @Composable
-fun PokerHandMatrix(hands: List<String>, modifier: Modifier = Modifier) {
+fun PokerHandMatrix( handActions: List<HandAction>, modifier: Modifier = Modifier) {
     val cardRanks =
         remember { listOf("A", "K", "Q", "J", "T", "9", "8", "7", "6", "5", "4", "3", "2") }
 
-    val actionColors = mapOf(
-        "CALL" to Color.Green.copy(alpha = 0.3f),
-        "FOLD" to Color.Red.copy(alpha = 0.3f),
-        "THREE_BET" to Color.Blue.copy(alpha = 0.3f)
-    )
+    val actionsMap = remember(handActions) {
+        handActions.groupBy { it.hand }
+    }
 
 
     LazyVerticalGrid(
@@ -50,16 +57,11 @@ fun PokerHandMatrix(hands: List<String>, modifier: Modifier = Modifier) {
             }
 
             val handName = buildHandName(rank1, rank2, handType)
-            val isSelected = hands.contains(handName)
+            val actions = actionsMap[handName]?.map { it.action }?.distinct() ?: emptyList()
 
             Box(
                 modifier = Modifier
                     .size(36.dp)
-                    .background(
-                        color = if (isSelected) MaterialTheme.colorScheme.primary
-                        else MaterialTheme.colorScheme.surfaceVariant,
-                        shape = RoundedCornerShape(4.dp)
-                    )
                     .border(
                         width = 1.dp,
                         color = MaterialTheme.colorScheme.outline,
@@ -67,11 +69,12 @@ fun PokerHandMatrix(hands: List<String>, modifier: Modifier = Modifier) {
                     ),
                 contentAlignment = Alignment.Center
             ) {
+                DualActionBackground(actions)
+
                 Text(
                     text = handName,
                     style = MaterialTheme.typography.labelSmall,
-                    color = if (isSelected) MaterialTheme.colorScheme.onPrimary
-                    else MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
                     maxLines = 1,
                     modifier = Modifier.padding(2.dp)
@@ -80,6 +83,7 @@ fun PokerHandMatrix(hands: List<String>, modifier: Modifier = Modifier) {
         }
     }
 }
+
 
 
 private fun buildHandName(rank1: String, rank2: String, type: String): String {
@@ -100,5 +104,56 @@ private fun cardOrder(rank: String): Int = when (rank) {
     "J" -> 11
     "T" -> 10
     else -> rank.toInt()
+}
+
+@Composable
+private fun DualActionBackground(actions: List<Action?>) {
+    val uniqueActions = actions.distinct()
+
+    when (uniqueActions.size) {
+        1 -> {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(getActionColor(uniqueActions[0]))
+            )
+        }
+        2 -> {
+            Box(modifier = Modifier.fillMaxSize()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .fillMaxWidth(0.5f)
+                        .background(getActionColor(uniqueActions[0]))
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .fillMaxWidth(0.5f)
+                        .align(Alignment.CenterEnd)
+                        .background(getActionColor(uniqueActions[1]))
+                )
+            }
+        }
+        else -> {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+            )
+        }
+    }
+}
+
+@Composable
+private fun getActionColor(action: Action?): Color {
+    return when (action) {
+        Action.RAISE -> Color(0xFF4CAF50)
+        Action.CALL -> Color(0xFF4CAF50) // Green
+        Action.THREE_BET -> Color.Yellow
+        Action.FOUR_BET -> Color(0xFF2196F3) // Blue
+        Action.FOLD -> Color(0xFFF44336) // Red
+        else -> MaterialTheme.colorScheme.surfaceVariant
+    }
 }
 
