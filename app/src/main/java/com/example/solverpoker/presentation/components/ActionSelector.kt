@@ -16,6 +16,7 @@ import com.example.solverpoker.domain.pokerLogic.DefenseAction
 @Composable
 fun ActionSelector(
     selectedAction: DefenseAction,
+    validActions: List<DefenseAction>,
     onActionSelected: (DefenseAction) -> Unit
 ) {
     Column {
@@ -27,7 +28,7 @@ fun ActionSelector(
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            items(DefenseAction.values()) { action ->
+            items(validActions) { action ->
                 Button(
                     onClick = { onActionSelected(action) },
                     colors = ButtonDefaults.buttonColors(

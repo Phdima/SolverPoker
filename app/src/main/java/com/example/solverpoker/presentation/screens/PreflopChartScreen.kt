@@ -51,7 +51,7 @@ fun PreflopChartScreen(viewModel: ChartsViewModel = hiltViewModel()) {
                 modifier = Modifier
             )
 
-            ChartControls(viewModel)
+            ChartControls()
         }
     }
 }

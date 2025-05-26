@@ -149,10 +149,11 @@ private fun DualActionBackground(actions: List<Action?>) {
 private fun getActionColor(action: Action?): Color {
     return when (action) {
         Action.RAISE -> Color(0xFF4CAF50)
-        Action.CALL -> Color(0xFF4CAF50) // Green
+        Action.CALL -> Color(0xFF4CAF50)
         Action.THREE_BET -> Color.Yellow
-        Action.FOUR_BET -> Color(0xFF2196F3) // Blue
-        Action.FOLD -> Color(0xFFF44336) // Red
+        Action.FOUR_BET -> Color(0xFF2196F3)
+        Action.PUSH -> Color(0xFF2196F3)
+        Action.FOLD -> Color(0xFFF44336)
         else -> MaterialTheme.colorScheme.surfaceVariant
     }
 }
