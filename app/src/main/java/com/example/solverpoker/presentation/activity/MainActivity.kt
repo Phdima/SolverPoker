@@ -8,15 +8,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
-import com.example.solverpoker.presentation.screens.PreflopChartScreen
+import com.example.solverpoker.presentation.screens.TrainerScreen
 import com.example.solverpoker.presentation.theme.SolverPokerTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -48,7 +41,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SolverPokerTheme {
-                PreflopChartScreen()
+                TrainerScreen()
             }
         }
     }

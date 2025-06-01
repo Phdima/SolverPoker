@@ -9,59 +9,29 @@
     "vsOpenRaise": {},
     "vsThreeBet": {
       "MP": {
-        "CALL": [
-          "TT-QQ",  "AQs"
-        ],
-        "FOUR_BET": [
-          "AA", "KK", "AKo","AKs"
-        ],
-        "FOLD": [
-          "22-99", "AJs", "KQs"
-        ]
+        "CALL": ["AJs","AQs","KJs+","TT-JJ"],
+        "FOUR_BET":["JJ-AA","AQo+","AKs","ATs","KTs","KJs"],
+        "FOLD": ["AQo","ATs","KTs"]
       },
       "CO": {
-        "CALL": [
-          "AA", "AKs", "AQs"
-        ],
-        "FOUR_BET": [
-          "AA", "KK", "AKs"
-        ],
-        "FOLD": [
-          "22-99", "ATs", "KJs"
-        ]
+        "CALL": ["AJs","AQs","KJs+","TT-JJ"],
+        "FOUR_BET":["JJ-AA","AQo+","AKs","ATs","KTs","KJs"],
+        "FOLD": ["AQo","ATs","KTs"]
       },
       "BTN": {
-        "CALL": [
-          "JJ+", "AKs"
-        ],
-        "FOUR_BET": [
-          "AA", "KK"
-        ],
-        "FOLD": [
-          "22-99", "AQo"
-        ]
+        "CALL": ["AJs","AQs","KJs+","TT-JJ"],
+        "FOUR_BET":["JJ-AA","AQo+","AKs","ATs","KTs","KJs"],
+        "FOLD": ["AQo","ATs","KTs"]
       },
       "SB": {
-        "CALL": [
-          "QQ+", "AKs"
-        ],
-        "FOUR_BET": [
-          "AA", "KK"
-        ],
-        "FOLD": [
-          "22-JJ", "AQo"
-        ]
+        "CALL": ["88-QQ","QTs+","JTs","AQo","KTs+","ATs","AJs","AQs","AKo"],
+        "FOUR_BET":["QQ-AA","AKs"],
+        "FOLD": ["AQo","JTs","QTs"]
       },
       "BB": {
-        "CALL": [
-          "QQ+", "AKs"
-        ],
-        "FOUR_BET": [
-          "AA", "KK"
-        ],
-        "FOLD": [
-          "22-JJ", "AQs"
-        ]
+        "CALL": ["88-QQ","QTs+","JTs","AQo","KTs+","ATs","AJs","AQs","AKo"],
+        "FOUR_BET":["QQ-AA","AKs"],
+        "FOLD": ["AQo","JTs","QTs"]
       }
     },
     "vsFourBet": {
@@ -165,37 +135,35 @@
     ],
     "vsOpenRaise": {
       "UTG": {
-        "CALL": [
-          "22-99", "AJs", "ATs", "KQs", "KJs", "QJs", "JTs", "T9s", "98s"
-        ],
-        "THREE_BET": [
-          "TT+", "AKs", "AQs", "A5s"
-        ],
-        "FOLD": [
-          "72o-J8o", "J9s", "T8s", "KTo", "QJo"
-        ]
+        "THREE_BET":["88-AA","AQo+","JTs+","QTs+","KTs+","ATs+"]
       }
     },
     "vsThreeBet": {
       "CO": {
-        "CALL": ["TT+", "AJs+", "KQs"],
-        "FOUR_BET": ["AA", "KK", "AKs"],
-        "FOLD": ["22-99", "ATs", "QJs"]
+        "CALL": ["AJs","AQs","KJs+","TT-JJ"],
+        "FOUR_BET":["JJ-AA","AQo+","AKs","ATs","KTs","KJs"],
+        "FOLD": ["AQo","ATs","KTs"]
       },
       "BTN": {
-        "CALL": ["88+", "ATs+", "KJs+"],
-        "FOUR_BET": ["AA", "KK", "A5s"],
-        "FOLD": ["22-77", "KTs", "QTs"]
+        "CALL": ["AJs","AQs","KJs+","TT-JJ"],
+        "FOUR_BET":["JJ-AA","AQo+","AKs","ATs","KTs","KJs"],
+        "FOLD": ["AQo","ATs","KTs"]
       },
       "SB": {
-        "CALL": ["TT+", "AKs", "AQs"],
-        "FOUR_BET": ["AA", "KK"],
-        "FOLD": ["22-99", "AJs"]
+        "CALL": ["88-QQ","QTs+","JTs","AQo","KTs+","ATs","AJs","AQs","AKo"],
+        "FOUR_BET":["QQ-AA","AKs"],
+        "FOLD": ["AQo","JTs","QTs"]
       },
       "BB": {
-        "CALL": ["TT+", "AKs", "AQs"],
-        "FOUR_BET": ["AA", "KK"],
-        "FOLD": ["22-99", "AJs"]
+        "CALL": ["88-QQ","QTs+","JTs","AQo","KTs+","ATs","AJs","AQs","AKo"],
+        "FOUR_BET":["QQ-AA","AKs"],
+        "FOLD": ["AQo","JTs","QTs"]
+      }
+    },
+    "vsFourBet": {
+      "UTG": {
+        "CALL": ["99-AA","AJs+","KQs","AKo"],
+        "FOLD": ["ATs","AJs","KTs+","QTs+","JTs","AQo","88-99"]
       }
     },
     "vsPush": {
@@ -233,41 +201,37 @@
     ],
     "vsOpenRaise": {
       "UTG": {
-        "CALL": ["TT-99", "AJs", "KQs", "QJs", "JTs"],
-        "THREE_BET": ["AA", "KK", "AKs", "A5s"],
-        "FOLD": ["22-88", "ATs", "KJs", "T9s"]
+        "THREE_BET":["88-AA","AQo+","JTs+","QTs+","KTs+","ATs+"]
       },
       "MP": {
-        "CALL": ["77+", "ATs+", "KJs+"],
-        "THREE_BET": ["AA", "KK", "A4s"],
-        "FOLD": ["22-66", "QTs", "J9s"]
+        "THREE_BET":["88-AA","AQo+","JTs+","QTs+","KTs+","ATs+"]
       }
     },
     "vsThreeBet": {
       "BTN": {
-        "CALL": ["88+", "AJs+", "KQs"],
-        "FOUR_BET": ["AA", "KK", "A5s"],
-        "FOLD": ["22-77", "QTs", "J9s"]
+        "CALL": ["AJs","AQs","KJs+","TT-JJ"],
+        "FOUR_BET":["JJ-AA","AQo+","AKs","ATs","KTs","KJs"],
+        "FOLD": ["AQo","ATs","KTs"]
       },
       "SB": {
-        "CALL": ["TT+", "AKs", "AQs"],
-        "FOUR_BET": ["AA", "KK"],
-        "FOLD": ["22-99", "AJs"]
+        "CALL": ["88-QQ","QTs+","JTs","AQo","KTs+","ATs","AJs","AQs","AKo"],
+        "FOUR_BET":["QQ-AA","AKs"],
+        "FOLD": ["AQo","JTs","QTs"]
       },
       "BB": {
-        "CALL": ["TT+", "AKs", "AQs"],
-        "FOUR_BET": ["AA", "KK"],
-        "FOLD": ["22-99", "AJs"]
+        "CALL": ["88-QQ","QTs+","JTs","AQo","KTs+","ATs","AJs","AQs","AKo"],
+        "FOUR_BET":["QQ-AA","AKs"],
+        "FOLD": ["AQo","JTs","QTs"]
       }
     },
     "vsFourBet": {
       "UTG": {
-        "PUSH": ["AA", "KK"],
-        "FOLD": ["AKs", "QQ", "AQs"]
+        "CALL": ["99-AA","AJs+","KQs","AKo"],
+        "FOLD": ["ATs","AJs","KTs+","QTs+","JTs","AQo","88-99"]
       },
       "MP": {
-        "PUSH": ["AA", "KK"],
-        "FOLD": ["AKs", "QQ"]
+        "CALL": ["99-AA","AJs+","KQs","AKo"],
+        "FOLD": ["ATs","AJs","KTs+","QTs+","JTs","AQo","88-99"]
       }
     },
     "vsPush": {
@@ -302,45 +266,39 @@
     ],
     "vsOpenRaise": {
       "UTG": {
-        "CALL": ["77-99", "AJs", "KQs", "QJs", "JTs"],
-        "THREE_BET": ["AA", "KK", "AKs", "A5s"],
-        "FOLD": ["22-66", "ATs", "KJs", "T9s"]
+        "THREE_BET":["88-AA","AQo+","JTs+","QTs+","KTs+","ATs+"]
       },
       "MP": {
-        "CALL": ["55+", "ATs+", "KJs+"],
-        "THREE_BET": ["AA", "KK", "A4s"],
-        "FOLD": ["22-44", "QTs", "J9s"]
+        "THREE_BET":["88-AA","AQo+","JTs+","QTs+","KTs+","ATs+"]
       },
       "CO": {
-        "CALL": ["44+", "A9s+", "KTs+"],
-        "THREE_BET": ["AA", "KK", "A3s"],
-        "FOLD": ["22-33", "Q9s", "J8s"]
+        "THREE_BET":["88-AA","AQo+","JTs+","QTs+","KTs+","ATs+"]
       }
     },
     "vsThreeBet": {
       "SB": {
-        "CALL": ["66+", "AJs+", "KQs"],
-        "FOUR_BET": ["AA", "KK", "A5s"],
-        "FOLD": ["22-55", "QTs", "J9s"]
+        "CALL": ["88-QQ","QTs+","JTs","AQo","KTs+","ATs","AJs","AQs","AKo"],
+        "FOUR_BET":["QQ-AA","AKs"],
+        "FOLD": ["AQo","JTs","QTs"]
       },
       "BB": {
-        "CALL": ["66+", "AJs+", "KQs"],
-        "FOUR_BET": ["AA", "KK", "A4s"],
-        "FOLD": ["22-55", "QTs", "J9s"]
+        "CALL": ["88-QQ","QTs+","JTs","AQo","KTs+","ATs","AJs","AQs","AKo"],
+        "FOUR_BET":["QQ-AA","AKs"],
+        "FOLD": ["AQo","JTs","QTs"]
       }
     },
     "vsFourBet": {
       "UTG": {
-        "PUSH": ["AA", "KK"],
-        "FOLD": ["AKs", "QQ", "AQs"]
+        "CALL": ["99-AA","AJs+","KQs","AKo"],
+        "FOLD": ["ATs","AJs","KTs+","QTs+","JTs","AQo","88-99"]
       },
       "MP": {
-        "PUSH": ["AA", "KK"],
-        "FOLD": ["AKs", "QQ"]
+        "CALL": ["99-AA","AJs+","KQs","AKo"],
+        "FOLD": ["ATs","AJs","KTs+","QTs+","JTs","AQo","88-99"]
       },
       "CO": {
-        "PUSH": ["AA", "KK"],
-        "FOLD": ["AKs", "QQ"]
+        "CALL": ["99-AA","AJs+","KQs","AKo"],
+        "FOLD": ["ATs","AJs","KTs+","QTs+","JTs","AQo","88-99"]
       }
     },
     "vsPush": {
@@ -427,29 +385,24 @@
     "openRaise": [],
     "vsOpenRaise": {
       "UTG": {
-        "CALL": ["22+", "A2s+", "K7s+", "Q9s+", "J9s+", "T8s+", "98s", "A9o+", "KTo+", "QJo+"],
-        "THREE_BET": ["AA", "KK", "AKs", "A5s", "A4s"],
-        "FOLD": ["72o-J3o", "J8s", "T7s"]
+        "CALL": ["22-JJ","KQo","A2s","A3s","A4s","A5s","A6s","A7s","A8s","A9s","ATs","AJs","K9s","KTs","Q9s","J9s","T9s","98s","87s","76s","AJo+","AQo","JTs","QTs","AQs"],
+        "THREE_BET": ["TT-AA","JTs+","QTs+","KTs+","ATs+","AKo+","A5s","A4s"]
       },
       "MP": {
-        "CALL": ["22+", "A2s+", "K5s+", "Q8s+", "J8s+", "T7s+", "97s+", "A8o+", "K9o+", "QTo+"],
-        "THREE_BET": ["AA", "KK", "AKs", "A4s", "A3s"],
-        "FOLD": ["72o-82o", "J7s", "T6s"]
+        "CALL": ["22-TT","T8s","97s","K8s","KQo","A2s","A3s","A4s","A5s","A6s","A7s","A8s","A9s","ATs","AJs","K9s","KTs","Q9s","J9s","T9s","98s","87s","76s","ATo","AJo","AQo","JTs","QTs","AJo","ATo","KJo"],
+        "THREE_BET": ["99-AA","JTs+","QTs+","KTs+","ATs+","AKo+","A5s","A4s"]
       },
       "CO": {
-        "CALL": ["22+", "A2s+", "K3s+", "Q6s+", "J7s+", "T6s+", "96s+", "A7o+", "K8o+", "Q9o+"],
-        "THREE_BET": ["AA", "KK", "AKs", "A3s", "A2s"],
-        "FOLD": ["72o-62o", "J6s", "T5s"]
+        "CALL": ["22-99","54s","65s","86s","J8s","Q8s","Q7s","T8s","97s","K8s","K7s","K6s","K5s","KQo","A2s","A3s","A4s","A5s","A6s","A7s","A8s","A9s","ATs","K9s","Q9s","J9s","T9s","98s","87s","76s","ATo","AJo","AQo","AJo","ATo","KJo"],
+        "THREE_BET": ["99-AA","J9s+","Q9s+","K9s+","A9s+","AQo+","A5s","A4s","T9s"]
       },
       "BTN": {
-        "CALL": ["22+", "A2s+", "K2s+", "Q4s+", "J5s+", "T5s+", "95s+", "A5o+", "K7o+", "Q8o+"],
-        "THREE_BET": ["AA", "KK", "AKs", "A2s", "KQs"],
-        "FOLD": ["72o-52o", "J4s", "T4s"]
+        "CALL": ["22-88","A5o","A7o","A8o","A9o","K9o","KTo","Q9o+","J9o+","T9o","43s","53s","63s","64s","74s","75s","85s","96s","T6s","T7s","J6s","J7s","54s","65s","86s","Q8s","Q7s","Q6s","Q5s","Q4s","Q3s","Q2s","97s","K8s","K7s","K6s","K5s","K4s","K3s","K2s","KQo","A2s","A3s","A6s","A7s","A8s","A9s","K9s","87s","76s","ATo","AJo","AJo","ATo","KJo"],
+        "THREE_BET": ["88-AA","KQo","J8s+","Q9s+","K9s+","A8s+","AJo+","A5s","A4s","T8s+","54s","98s","87s","76s","65s","A2s","A3s"]
       },
       "SB": {
-        "CALL": ["22+", "A2s+", "K2s+", "Q3s+", "J4s+", "T4s+", "94s+", "A3o+", "K6o+", "Q7o+"],
-        "THREE_BET": ["AA", "KK", "AKs", "KJs", "QJs"],
-        "FOLD": ["72o-32o", "J3s", "T3s"]
+        "CALL": ["22-88","QTs","Q9s","J9s","J8s","T8s","A2o","A3o","A4o","A5o","A6o","A7o","A8o","A9o","K9o","KTo","K5o","K6o","K7o","K8o","Q8o+","J8o+","T8o+","98o","87o","76o","65o","32s","42s+","52s+","63s","64s","73s+","84s","85s","93s+","T7s","T6s","T5s","T4s","T3s","T2s","J7s","J6s","J5s","J4s","J3s","J2s","54s","65s","86s","Q8s","Q7s","Q6s","Q5s","Q4s","Q3s","Q2s","97s","K8s","K7s","K6s","K5s","K4s","K3s","K2s","KQo","A2s","A3s","A6s","A7s","A8s","A9s","K9s","87s","76s","ATo","AJo","AJo","ATo","KJo"],
+        "THREE_BET": ["77-AA","97s","T5s","T4s","T3s","T2s","J4s","J3s","K7s","K6s","A2o","A3o","A4o","A5o","K5o","K6o","K7o","K8o","Q8o","J8o","T8o","KQo","J9s+","QTs+","K9s+","A9s+","AJo+","A5s","A4s","T8s+","54s","98s","87s","76s","65s","A3s"]
       }
     },
     "vsThreeBet": {},
@@ -475,9 +428,9 @@
         "FOLD": ["AQo","KTs","KJs","ATs","QJs"]
       },
       "SB": {
-        "PUSH": ["AA", "KK","QQ","JJ","TT","AKo", "A5s","A4s","AKs"],
-        "CALL": ["AA","ATs","AJs","AQs","KTs+","AQo","QJs","88-JJ"],
-        "FOLD": ["AQo","KTs","KJs","ATs","QJs"]
+        "PUSH": ["AA", "KK","QQ","JJ","TT","99","AQo+", "AQs+", "A5s","A4s"],
+        "CALL": ["AA","ATs","AJs","AQs","KTs+","AQo","QTs+", "JTs+","88-JJ","T9s","98s","87s","76s","65s","54s"],
+        "FOLD": ["KTs", "QTs","JTs","T9s","98s","87s","76s","65s","54s"]
       }
     },
     "vsPush": {}

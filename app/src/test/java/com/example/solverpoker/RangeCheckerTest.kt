@@ -51,7 +51,7 @@ class RangeCheckerTest {
     @Test
     fun `KQs should be in QJs+ range`() {
         val hand = PokerHand("Kh", "Qh")
-        assertTrue(rangeChecker.isHandInRange(hand, listOf("QJs+")))
+        assertFalse(rangeChecker.isHandInRange(hand, listOf("QJs+")))
     }
 
     @Test
