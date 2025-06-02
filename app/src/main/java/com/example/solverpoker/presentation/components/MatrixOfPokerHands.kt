@@ -115,7 +115,7 @@ private fun DualActionBackground(actions: List<Action?>) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(getActionColor(uniqueActions[0]))
+                    .background(getActionColor(uniqueActions[0]), shape = RoundedCornerShape(4.dp))
             )
         }
         2 -> {
@@ -124,14 +124,14 @@ private fun DualActionBackground(actions: List<Action?>) {
                     modifier = Modifier
                         .fillMaxHeight()
                         .fillMaxWidth(0.5f)
-                        .background(getActionColor(uniqueActions[0]))
+                        .background(getActionColor(uniqueActions[0]), shape = RoundedCornerShape(topStart = 4.dp, bottomStart = 4.dp))
                 )
                 Box(
                     modifier = Modifier
                         .fillMaxHeight()
                         .fillMaxWidth(0.5f)
                         .align(Alignment.CenterEnd)
-                        .background(getActionColor(uniqueActions[1]))
+                        .background(getActionColor(uniqueActions[1]), shape = RoundedCornerShape(topEnd = 4.dp, bottomEnd = 4.dp))
                 )
             }
         }
@@ -139,7 +139,7 @@ private fun DualActionBackground(actions: List<Action?>) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .background(MaterialTheme.colorScheme.surfaceVariant, shape = RoundedCornerShape(4.dp))
             )
         }
     }
