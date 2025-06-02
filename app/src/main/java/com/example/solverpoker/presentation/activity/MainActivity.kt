@@ -9,7 +9,11 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.core.view.WindowCompat
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.solverpoker.presentation.screens.PreflopChartScreen
+import com.example.solverpoker.presentation.screens.TitleScreen
 import com.example.solverpoker.presentation.screens.TrainerScreen
 import com.example.solverpoker.presentation.theme.SolverPokerTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,10 +43,18 @@ class MainActivity : ComponentActivity() {
                         or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                         or View.SYSTEM_UI_FLAG_FULLSCREEN
                 )
+
+
         enableEdgeToEdge()
         setContent {
+            val navController = rememberNavController()
             SolverPokerTheme {
-                PreflopChartScreen()
+                NavHost(navController = navController, startDestination = "TitleScreen") {
+                    composable("TitleScreen") { TitleScreen(navController = navController) }
+                    composable("PreflopChart") { PreflopChartScreen() }
+                    composable("TrainerScreen") { TrainerScreen() }
+                }
+
             }
         }
     }

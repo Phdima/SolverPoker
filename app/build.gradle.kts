@@ -43,6 +43,9 @@ android {
 
 dependencies {
 
+    //navigation
+    implementation (libs.androidx.navigation.compose)
+
     // moshi
     implementation(libs.moshi.kotlin)
     implementation(libs.moshi.adapters)
