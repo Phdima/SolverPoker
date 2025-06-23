@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -20,6 +21,9 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import com.example.solverpoker.domain.pokerLogic.CardRank
+import com.example.solverpoker.domain.pokerLogic.CardSuit
+import com.example.solverpoker.domain.pokerLogic.PlayingCard
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -34,7 +38,7 @@ fun TableView() {
         val tableHeight = maxHeight * 0.6f
 
 
-        val playerSize = maxWidth * 0.2f
+        val playerSize = maxWidth * 0.3f
 
         Box(Modifier.align(Alignment.Center).size(tableWidth, tableHeight))
         {
