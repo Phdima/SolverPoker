@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -21,26 +22,36 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.solverpoker.domain.pokerLogic.CardRank
 import com.example.solverpoker.domain.pokerLogic.CardSuit
+import com.example.solverpoker.domain.pokerLogic.Deck
+import com.example.solverpoker.domain.pokerLogic.Player
 import com.example.solverpoker.domain.pokerLogic.PlayingCard
+import com.example.solverpoker.presentation.viewmodel.TrainerViewModel
 import kotlin.math.cos
 import kotlin.math.sin
 
 @Composable
-fun TableView() {
+fun TableView(viewModel: TrainerViewModel = hiltViewModel()) {
+    val gameState by viewModel.gameState
+
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
             .background(color = Color.Gray)
     ) {
-        val tableWidth = maxWidth * 0.8f
-        val tableHeight = maxHeight * 0.6f
+        val tableWidth = maxWidth * 0.9f
+        val tableHeight = maxHeight * 0.7f
 
 
-        val playerSize = maxWidth * 0.3f
+        val playerSize = maxWidth * 0.4f
 
-        Box(Modifier.align(Alignment.Center).size(tableWidth, tableHeight))
+        Box(
+            Modifier
+                .align(Alignment.Center)
+                .size(tableWidth, tableHeight)
+        )
         {
             Box(
                 modifier = Modifier
@@ -65,11 +76,13 @@ fun TableView() {
             ) {
                 PlayerProfile(
                     modifier = Modifier
-                        .size(playerSize)
+                        .size(playerSize),
+                   player = gameState.players[5]
                 )
                 PlayerProfile(
                     modifier = Modifier
-                        .size(playerSize)
+                        .size(playerSize),
+                    player = gameState.players[4]
                 )
             }
             Column(
@@ -80,22 +93,26 @@ fun TableView() {
             ) {
                 PlayerProfile(
                     modifier = Modifier
-                        .size(playerSize)
+                        .size(playerSize),
+                    player = gameState.players[1]
                 )
                 PlayerProfile(
                     modifier = Modifier
-                        .size(playerSize)
+                        .size(playerSize),
+                    player = gameState.players[2]
                 )
             }
             PlayerProfile(
                 modifier = Modifier
                     .size(playerSize)
-                    .align(Alignment.TopCenter)
+                    .align(Alignment.TopCenter),
+                player = gameState.players[0]
             )
             PlayerProfile(
                 modifier = Modifier
                     .size(playerSize)
-                    .align(Alignment.BottomCenter)
+                    .align(Alignment.BottomCenter),
+                player = gameState.players[3]
             )
         }
 
