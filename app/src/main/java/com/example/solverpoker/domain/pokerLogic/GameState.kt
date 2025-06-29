@@ -2,6 +2,7 @@ package com.example.solverpoker.domain.pokerLogic
 
 data class GameState(
     val players: List<Player>,
+    val deck: Deck,
     val dealerPosition: Int, // Индекс дилера
     val currentPlayerIndex: Int,
     val pot: Int,
@@ -17,7 +18,8 @@ data class GameState(
                 player.copy(
                     isDealer = index == newDealerPosition,
                     isSmallBlind = index == (newDealerPosition + 1) % players.size,
-                    isBigBlind = index == (newDealerPosition + 2) % players.size
+                    isBigBlind = index == (newDealerPosition + 2) % players.size,
+                    cards = deck.drawCard()
                 )
             }
         )
