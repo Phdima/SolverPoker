@@ -64,6 +64,14 @@ fun PlayerProfile(
                     fontWeight = FontWeight.Bold
                 )
             }
+
+            if (player.cards.isNotEmpty()){
+             Row()   {
+                    PokerCard(player.cards[0], modifier = Modifier.height(80.dp).width(50.dp))
+                    PokerCard(player.cards[1], modifier = Modifier.height(80.dp).width(50.dp))
+                }
+            }
+
             // Дилерская кнопка
             if (player.isDealer) {
                 PokerDealerButton(
