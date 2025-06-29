@@ -12,10 +12,26 @@ data class GameState(
     // Обновляем состояния игроков
     fun nextHand(): GameState {
         val newDealerPosition = (dealerPosition + 1) % players.size
+
+        val initialPositions = listOf(
+            Position.BTN,  // Игрок 0 - дилер
+            Position.SB,   // Игрок 1
+            Position.BB,   // Игрок 2
+            Position.UTG,  // Игрок 3
+            Position.MP,   // Игрок 4
+            Position.CO    // Игрок 5
+        )
+
+        val newPositions = List(players.size) { index ->
+            // Вычисляем относительную позицию от дилера
+            val positionIndex = (index - newDealerPosition + players.size) % players.size
+            initialPositions[positionIndex]
+        }
         return copy(
             dealerPosition = newDealerPosition,
             players = players.mapIndexed { index, player ->
                 player.copy(
+                    position = newPositions[index],
                     isDealer = index == newDealerPosition,
                     isSmallBlind = index == (newDealerPosition + 1) % players.size,
                     isBigBlind = index == (newDealerPosition + 2) % players.size,
@@ -24,4 +40,5 @@ data class GameState(
             }
         )
     }
+
 }

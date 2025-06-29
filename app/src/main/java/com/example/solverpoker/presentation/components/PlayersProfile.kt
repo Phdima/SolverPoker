@@ -43,14 +43,9 @@ fun PlayerProfile(
                 .align(Alignment.Center),
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = player.name,
-                color = Color.White,
-                modifier = Modifier.padding(8.dp),
-                textAlign = TextAlign.Center
-            )
 
-            // Фишки игрока
+
+
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -59,7 +54,7 @@ fun PlayerProfile(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "${player.chips}",
+                    text = player.name,
                     color = Color.White,
                     fontWeight = FontWeight.Bold
                 )
@@ -67,8 +62,8 @@ fun PlayerProfile(
 
             if (player.cards.isNotEmpty()){
              Row()   {
-                    PokerCard(player.cards[0], modifier = Modifier.height(80.dp).width(50.dp))
-                    PokerCard(player.cards[1], modifier = Modifier.height(80.dp).width(50.dp))
+                    PokerCard(player.cards[0],player.isHero, modifier = Modifier.height(80.dp).width(50.dp))
+                    PokerCard(player.cards[1],player.isHero, modifier = Modifier.height(80.dp).width(50.dp))
                 }
             }
 
