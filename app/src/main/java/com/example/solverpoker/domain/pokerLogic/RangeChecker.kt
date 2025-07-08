@@ -13,4 +13,5 @@ class RangeChecker(private val rangeParser: RangeParser) {
     fun isHandInRange(hand: PokerHand, range: List<String>): Boolean {
         return isHandInRange(hand.toStringNotation(), range)
     }
+
 }

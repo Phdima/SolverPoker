@@ -70,6 +70,9 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
+    //log
+    implementation (libs.timber)
+
     //tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

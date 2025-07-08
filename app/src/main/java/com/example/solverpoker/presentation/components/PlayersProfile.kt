@@ -45,12 +45,10 @@ fun PlayerProfile(
         ) {
 
 
-
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                ,
+                    .fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -60,12 +58,25 @@ fun PlayerProfile(
                 )
             }
 
-            if (player.cards.isNotEmpty()){
-             Row()   {
-                    PokerCard(player.cards[0],player.isHero, modifier = Modifier.height(80.dp).width(50.dp))
-                    PokerCard(player.cards[1],player.isHero, modifier = Modifier.height(80.dp).width(50.dp))
+            if (player.cards.isNotEmpty()) {
+                Row() {
+                    PokerCard(
+                        player.cards[0],
+                        player.isHero,
+                        modifier = Modifier
+                            .height(80.dp)
+                            .width(50.dp)
+                    )
+                    PokerCard(
+                        player.cards[1],
+                        player.isHero,
+                        modifier = Modifier
+                            .height(80.dp)
+                            .width(50.dp)
+                    )
                 }
             }
+
 
             // Дилерская кнопка
             if (player.isDealer) {
@@ -98,6 +109,12 @@ fun PlayerProfile(
                 )
             }
         }
+
+        BetView(
+            player = player,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+        )
 
 
     }

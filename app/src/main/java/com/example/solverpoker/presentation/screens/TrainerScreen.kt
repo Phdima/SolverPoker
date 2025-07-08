@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -25,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.solverpoker.domain.pokerLogic.Action
 import com.example.solverpoker.domain.pokerLogic.displaySymbol
 import com.example.solverpoker.presentation.components.PlayerProfile
 import com.example.solverpoker.presentation.viewmodel.TrainerViewModel
@@ -123,27 +126,72 @@ fun TrainerScreen(viewModel: TrainerViewModel = hiltViewModel()) {
                 .padding(20.dp)
         ) {
 
-               // DebugPositionView()
-                feedbackMessage?.let {
-                    Text(
-                        it,
-                        color = if (viewModel.answerResult.value == true) Color.Green else Color.Red
-                    )
-                }
+            // DebugPositionView()
+            feedbackMessage?.let {
+                Text(
+                    text = it,
+                    color = when (viewModel.answerResult.value) {
+                        true -> Color.Green
+                        false -> Color.Red
+                        else -> Color.Gray
+                    },
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
 
-                Row(
+            Row(
 
+            ) {
+                Button(
+                    onClick = {
+                        viewModel.selectAction(Action.RAISE)
+                        viewModel.checkAnswer()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (viewModel.action.value == Action.RAISE) Color.LightGray else MaterialTheme.colorScheme.primary
+                    ),
+                    modifier = Modifier.weight(1f)
                 ) {
-                    Button(onClick = { viewModel.checkAnswer() }) {
-                        Text("Проверить ответ")
-                    }
-
-
-                    Button(
-                        onClick = { viewModel.startNewHand() },
-
-                        ) { Text("New Hand") }
+                    Text("Raise")
                 }
+                Button(
+                    onClick = {
+                        viewModel.selectAction(Action.CALL)
+                        viewModel.checkAnswer()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (viewModel.action.value == Action.CALL) Color.LightGray else MaterialTheme.colorScheme.primary
+                    ),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Call")
+                }
+
+                Button(
+                    onClick = {
+                        viewModel.selectAction(Action.FOLD)
+                        viewModel.checkAnswer()
+
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (viewModel.action.value == Action.FOLD) Color.LightGray else MaterialTheme.colorScheme.primary
+                    ),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Fold")
+                }
+                Button(
+                    onClick = {
+                        viewModel.startNewHand()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (viewModel.action.value == Action.FOLD) Color.LightGray else MaterialTheme.colorScheme.primary
+                    ),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("nextHand")
+                }
+            }
 
         }
     }
