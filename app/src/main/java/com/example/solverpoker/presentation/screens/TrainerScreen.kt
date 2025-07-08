@@ -6,27 +6,36 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.solverpoker.domain.pokerLogic.Action
+import com.example.solverpoker.domain.pokerLogic.displaySymbol
 import com.example.solverpoker.presentation.components.PlayerProfile
 import com.example.solverpoker.presentation.viewmodel.TrainerViewModel
 
 @Composable
 fun TrainerScreen(viewModel: TrainerViewModel = hiltViewModel()) {
-    val gameState by viewModel.gameState
+    val gameState by viewModel.gameState.collectAsState()
+    val feedbackMessage by viewModel.feedbackMessage.collectAsState()
 
     BoxWithConstraints(
         modifier = Modifier
@@ -111,9 +120,113 @@ fun TrainerScreen(viewModel: TrainerViewModel = hiltViewModel()) {
             }
 
         }
-        Button(
-            onClick = { viewModel.startNewHand() },
-            modifier = Modifier.align(Alignment.BottomEnd).padding(20.dp)
-        ) { Text("New Hand") }
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(20.dp)
+        ) {
+
+            // DebugPositionView()
+            feedbackMessage?.let {
+                Text(
+                    text = it,
+                    color = when (viewModel.answerResult.value) {
+                        true -> Color.Green
+                        false -> Color.Red
+                        else -> Color.Gray
+                    },
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
+
+            Row(
+
+            ) {
+                Button(
+                    onClick = {
+                        viewModel.selectAction(Action.RAISE)
+                        viewModel.checkAnswer()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (viewModel.action.value == Action.RAISE) Color.LightGray else MaterialTheme.colorScheme.primary
+                    ),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Raise")
+                }
+                Button(
+                    onClick = {
+                        viewModel.selectAction(Action.CALL)
+                        viewModel.checkAnswer()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (viewModel.action.value == Action.CALL) Color.LightGray else MaterialTheme.colorScheme.primary
+                    ),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Call")
+                }
+
+                Button(
+                    onClick = {
+                        viewModel.selectAction(Action.FOLD)
+                        viewModel.checkAnswer()
+
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (viewModel.action.value == Action.FOLD) Color.LightGray else MaterialTheme.colorScheme.primary
+                    ),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Fold")
+                }
+                Button(
+                    onClick = {
+                        viewModel.startNewHand()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (viewModel.action.value == Action.FOLD) Color.LightGray else MaterialTheme.colorScheme.primary
+                    ),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("nextHand")
+                }
+            }
+
+        }
+    }
+}
+
+@Composable
+fun DebugPositionView(viewModel: TrainerViewModel = hiltViewModel()) {
+    val gameState by viewModel.gameState.collectAsState()
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.LightGray)
+            .padding(8.dp)
+    ) {
+        Text("Отладка позиций и карт:", fontWeight = FontWeight.Bold)
+        gameState.players.forEach { player ->
+            val cardsInfo = player.cards.joinToString(", ") {
+                "${it.rank.displaySymbol()}${it.suit.symbol}"
+            }
+
+            val positionInfo = buildString {
+                append(player.name)
+                append(": ${player.position}")
+                if (player.isDealer) append(" [D]")
+                if (player.isSmallBlind) append(" [SB]")
+                if (player.isBigBlind) append(" [BB]")
+                if (player.isHero) append(" [HERO]")
+                append(" | $cardsInfo")
+            }
+
+            Text(
+                text = positionInfo,
+                modifier = Modifier.padding(vertical = 4.dp)
+            )
+        }
     }
 }

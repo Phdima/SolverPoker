@@ -27,11 +27,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.solverpoker.R
 import com.example.solverpoker.domain.pokerLogic.CardSuit
+import com.example.solverpoker.domain.pokerLogic.Player
 import com.example.solverpoker.domain.pokerLogic.PlayingCard
 
 @Composable
 fun PokerCard(
     card: PlayingCard,
+    isHero: Boolean = false,
     modifier: Modifier = Modifier,
     cornerRadius: Dp = 8.dp,
     elevation: Dp = 4.dp
@@ -44,10 +46,11 @@ fun PokerCard(
         shape = RoundedCornerShape(cornerRadius),
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
-        if (card.isFaceUp) {
+        if (isHero) {
             FaceUpCardContent(card)
         } else {
-            CardBack()
+            FaceUpCardContent(card)
+            //CardBack()
         }
     }
 }
