@@ -43,7 +43,7 @@ data class GameState(
     fun updatePlayerAction(playerId: Int, action: Action): GameState {
         return copy(
             players = players.map { player ->
-                if (player.id == playerId && !player.isHero) player.copy(action = action) else player
+                if (player.id == playerId) player.copy(action = action) else player
             }
         )
     }
