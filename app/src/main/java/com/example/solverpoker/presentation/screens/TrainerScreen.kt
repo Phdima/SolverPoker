@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.solverpoker.domain.pokerLogic.Action
+import com.example.solverpoker.domain.pokerLogic.Position
 import com.example.solverpoker.domain.pokerLogic.displaySymbol
 import com.example.solverpoker.presentation.components.PlayerProfile
 import com.example.solverpoker.presentation.viewmodel.TrainerViewModel
@@ -35,6 +37,20 @@ import com.example.solverpoker.presentation.viewmodel.TrainerViewModel
 @Composable
 fun TrainerScreen(viewModel: TrainerViewModel = hiltViewModel()) {
     val gameState by viewModel.gameState.collectAsState()
+    val positionsOrder =
+        listOf(Position.UTG, Position.MP, Position.CO, Position.BTN, Position.SB, Position.BB)
+    val heroPosition = gameState.players.find { it.isHero }?.position ?: Position.BTN
+    val hasRaiserBeforeHero = remember(gameState) {
+        gameState.players.any { player ->
+            !player.isHero &&
+                    positionsOrder.indexOf(player.position) < positionsOrder.indexOf(heroPosition) &&
+                    (player.action == Action.RAISE ||
+                            player.action == Action.THREE_BET ||
+                            player.action == Action.FOUR_BET ||
+                            player.action == Action.PUSH)
+        }
+    }
+    val raiseAction = if (hasRaiserBeforeHero) Action.THREE_BET else Action.RAISE
     val feedbackMessage by viewModel.feedbackMessage.collectAsState()
 
     BoxWithConstraints(
@@ -144,15 +160,15 @@ fun TrainerScreen(viewModel: TrainerViewModel = hiltViewModel()) {
             ) {
                 Button(
                     onClick = {
-                        viewModel.selectAction(Action.RAISE)
+                        viewModel.selectAction(raiseAction)
                         viewModel.checkAnswer()
                     },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (viewModel.action.value == Action.RAISE) Color.LightGray else MaterialTheme.colorScheme.primary
+                        containerColor = if (viewModel.action.value == raiseAction) Color.LightGray else MaterialTheme.colorScheme.primary
                     ),
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("Raise")
+                    Text(if (hasRaiserBeforeHero) "3-Bet" else "Raise")
                 }
                 Button(
                     onClick = {
