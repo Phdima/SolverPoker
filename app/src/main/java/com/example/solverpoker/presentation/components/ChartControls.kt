@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,70 +27,80 @@ import com.example.solverpoker.presentation.viewmodel.ChartsViewModel
 fun ChartControls(viewModel: ChartsViewModel = hiltViewModel()) {
     val state = viewModel.state.value
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    LazyColumn (modifier = Modifier.padding(16.dp)) {
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 5.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
+      item {
+          Row(
+              modifier = Modifier
+                  .fillMaxWidth()
+                  .padding(bottom = 5.dp),
+              horizontalArrangement = Arrangement.SpaceEvenly
+          ) {
 
-            Box(
-                modifier = Modifier
-                    .background(color = Color(0xFF4CAF50))
-                    .size(15.dp)
-                    .align(alignment = Alignment.CenterVertically)
-            )
-            Text("- Raise/call", modifier = Modifier.align(alignment = Alignment.CenterVertically))
+              Box(
+                  modifier = Modifier
+                      .background(color = Color(0xFF4CAF50))
+                      .size(15.dp)
+                      .align(alignment = Alignment.CenterVertically)
+              )
+              Text(
+                  "- Raise/call",
+                  modifier = Modifier.align(alignment = Alignment.CenterVertically)
+              )
 
-            Box(
-                modifier = Modifier
-                    .background(color = Color.Yellow)
-                    .size(15.dp)
-                    .align(alignment = Alignment.CenterVertically)
-            )
-            Text("- 3bet", modifier = Modifier.align(alignment = Alignment.CenterVertically))
+              Box(
+                  modifier = Modifier
+                      .background(color = Color.Yellow)
+                      .size(15.dp)
+                      .align(alignment = Alignment.CenterVertically)
+              )
+              Text("- 3bet", modifier = Modifier.align(alignment = Alignment.CenterVertically))
 
-            Box(
-                modifier = Modifier
-                    .background(color = Color(0xFF2196F3))
-                    .size(15.dp)
-                    .align(alignment = Alignment.CenterVertically)
-            )
-            Text("- 4bet/Push", modifier = Modifier.align(alignment = Alignment.CenterVertically))
+              Box(
+                  modifier = Modifier
+                      .background(color = Color(0xFF2196F3))
+                      .size(15.dp)
+                      .align(alignment = Alignment.CenterVertically)
+              )
+              Text("- 4bet/Push", modifier = Modifier.align(alignment = Alignment.CenterVertically))
 
 
-            Box(
-                modifier = Modifier
-                    .background(color = Color(0xFFF44336))
-                    .size(15.dp)
-                    .align(alignment = Alignment.CenterVertically)
-            )
-            Text("- Fold", modifier = Modifier.align(alignment = Alignment.CenterVertically))
-        }
+              Box(
+                  modifier = Modifier
+                      .background(color = Color(0xFFF44336))
+                      .size(15.dp)
+                      .align(alignment = Alignment.CenterVertically)
+              )
+              Text("- Fold", modifier = Modifier.align(alignment = Alignment.CenterVertically))
+          }
+      }
+      item{
+          PositionSelector(
+              title = "Ваша позиция:",
+              selectedPosition = state.heroPosition,
+              onPositionSelected = viewModel::selectHeroPosition
+          )
+      }
 
-        PositionSelector(
-            title = "Ваша позиция:",
-            selectedPosition = state.heroPosition,
-            onPositionSelected = viewModel::selectHeroPosition
-        )
 
-        Spacer(modifier = Modifier.height(16.dp))
 
-        ActionSelector(
-            selectedAction = state.selectedAction,
-            validActions = getValidOption(state.heroPosition),
-            onActionSelected = viewModel::selectDefenseAction
-        )
+      item{
+          ActionSelector(
+              selectedAction = state.selectedAction,
+              validActions = getValidOption(state.heroPosition),
+              onActionSelected = viewModel::selectDefenseAction
+          )
+      }
 
         if (state.selectedAction != DefenseAction.RAISE) {
-            PositionSelector(
-                title = "Позиция оппонента:",
-                selectedPosition = state.opponentPosition,
-                positions = getValidOpponentPositions(state.heroPosition, state.selectedAction),
-                onPositionSelected = viewModel::selectOpponentPosition
-            )
+            item{
+                PositionSelector(
+                    title = "Позиция оппонента:",
+                    selectedPosition = state.opponentPosition,
+                    positions = getValidOpponentPositions(state.heroPosition, state.selectedAction),
+                    onPositionSelected = viewModel::selectOpponentPosition
+                )
+            }
         }
     }
 }
