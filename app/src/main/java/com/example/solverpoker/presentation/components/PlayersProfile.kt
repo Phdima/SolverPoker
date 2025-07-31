@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,19 +29,19 @@ import com.example.solverpoker.domain.pokerLogic.CardSuit
 import com.example.solverpoker.domain.pokerLogic.Deck
 import com.example.solverpoker.domain.pokerLogic.Player
 import com.example.solverpoker.domain.pokerLogic.PlayingCard
+import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
 @Composable
 fun PlayerProfile(
     player: Player,
     modifier: Modifier
 ) {
-    Box(modifier = modifier) {
+    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         // Аватар игрока
         Box(
             modifier = Modifier
                 .size(120.dp)
-                .background(Color.DarkGray, CircleShape)
-                .align(Alignment.Center),
+                .background(Color.DarkGray, CircleShape),
             contentAlignment = Alignment.Center
         ) {
 
@@ -113,7 +114,7 @@ fun PlayerProfile(
         BetView(
             player = player,
             modifier = Modifier
-                .align(Alignment.BottomCenter)
+
         )
 
 

@@ -214,9 +214,9 @@ class TrainerViewModel @Inject constructor(
         val handNotation = cardsToNotation(player.cards)
         Timber.d("Determining action for ${player.position} with hand: $handNotation")
 
-        // Если не было рейзера перед нами
-        if (lastRaiser == null) {
-            Timber.d("No raiser before - checking open raise range")
+        // Проверка невалидных действий lastRaiser
+        if (lastRaiser == null ) {
+            Timber.d("No valid raiser - checking open raise range")
             val openRaiseRange = chart.openRaise ?: emptyList()
             return if (rangeChecker.isHandInRange(handNotation, openRaiseRange)) {
                 Action.RAISE
@@ -227,79 +227,57 @@ class TrainerViewModel @Inject constructor(
 
         Timber.d("Raiser detected: ${lastRaiser.position}, action: ${lastRaiser.action}")
 
-        // Определяем, какой чарт использовать в зависимости от типа рейза
-        val responseChart = when (lastRaiser.action) {
-            Action.RAISE -> {
-                Timber.d("Using vsOpenRaise chart")
-                chart.vsOpenRaise?.get(lastRaiser.position) ?: emptyMap()
-            }
-            Action.THREE_BET -> {
-                Timber.d("Using vsThreeBet chart")
-                chart.vsThreeBet?.get(lastRaiser.position) ?: emptyMap()
-            }
-            Action.FOUR_BET -> {
-                Timber.d("Using vsFourBet chart")
-                chart.vsFourBet?.get(lastRaiser.position) ?: emptyMap()
-            }
-            Action.PUSH -> {
-                Timber.d("Using vsPush chart")
-                chart.vsPush?.get(lastRaiser.position) ?: emptyMap()
-            }
-            else -> {
-                Timber.w("Unknown aggressive action: ${lastRaiser.action}, using vsOpenRaise as fallback")
-                chart.vsOpenRaise?.get(lastRaiser.position) ?: emptyMap()
-            }
-        }
-
-        // Определяем возможные ответные действия в зависимости от типа рейза
         return when (lastRaiser.action) {
             Action.RAISE -> {
+                val responseRange = chart.vsOpenRaise?.get(lastRaiser.position)
+                    ?.get(Action.THREE_BET) ?: emptyList()
+
+                val callRange = chart.vsOpenRaise?.get(lastRaiser.position)
+                    ?.get(Action.CALL) ?: emptyList()
+
                 when {
-                    responseChart[Action.THREE_BET]?.let {
-                        rangeChecker.isHandInRange(handNotation, it)
-                    } == true -> Action.THREE_BET
-
-                    responseChart[Action.CALL]?.let {
-                        rangeChecker.isHandInRange(handNotation, it)
-                    } == true -> Action.CALL
-
+                    rangeChecker.isHandInRange(handNotation, responseRange) -> Action.THREE_BET
+                    rangeChecker.isHandInRange(handNotation, callRange) -> Action.CALL
                     else -> Action.FOLD
                 }
             }
+
             Action.THREE_BET -> {
+                val responseRange = chart.vsThreeBet?.get(lastRaiser.position)
+                    ?.get(Action.FOUR_BET) ?: emptyList()
+                val callRange = chart.vsThreeBet?.get(lastRaiser.position)
+                    ?.get(Action.CALL) ?: emptyList()
+
                 when {
-                    responseChart[Action.FOUR_BET]?.let {
-                        rangeChecker.isHandInRange(handNotation, it)
-                    } == true -> Action.FOUR_BET
-
-                    responseChart[Action.CALL]?.let {
-                        rangeChecker.isHandInRange(handNotation, it)
-                    } == true -> Action.CALL
-
+                    rangeChecker.isHandInRange(handNotation, responseRange) -> Action.FOUR_BET
+                    rangeChecker.isHandInRange(handNotation, callRange) -> Action.CALL
                     else -> Action.FOLD
                 }
             }
+
             Action.FOUR_BET -> {
+                val responseRange = chart.vsFourBet?.get(lastRaiser.position)
+                    ?.get(Action.PUSH) ?: emptyList()
+                val callRange = chart.vsFourBet?.get(lastRaiser.position)
+                    ?.get(Action.CALL) ?: emptyList()
+
                 when {
-                    responseChart[Action.PUSH]?.let {
-                        rangeChecker.isHandInRange(handNotation, it)
-                    } == true -> Action.PUSH
-
-                    responseChart[Action.CALL]?.let {
-                        rangeChecker.isHandInRange(handNotation, it)
-                    } == true -> Action.CALL
-
+                    rangeChecker.isHandInRange(handNotation, responseRange) -> Action.PUSH
+                    rangeChecker.isHandInRange(handNotation, callRange) -> Action.CALL
                     else -> Action.FOLD
                 }
             }
+
             Action.PUSH -> {
-                // На пуш обычно только колл или фолд
-                if (responseChart[Action.CALL]?.let {
-                        rangeChecker.isHandInRange(handNotation, it)
-                    } == true) Action.CALL else Action.FOLD
+                val callRange = chart.vsPush?.get(lastRaiser.position)
+                    ?.get(Action.CALL) ?: emptyList()
+
+                if (rangeChecker.isHandInRange(handNotation, callRange)) Action.CALL else Action.FOLD
             }
+
+            // Обработка неожиданных действий
             else -> {
-                // Фолд по умолчанию для неизвестных действий
+                Timber.w("Unexpected raiser action: ${lastRaiser.action}")
                 Action.FOLD
             }
         }

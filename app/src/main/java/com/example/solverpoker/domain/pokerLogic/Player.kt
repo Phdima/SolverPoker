@@ -1,14 +1,14 @@
 package com.example.solverpoker.domain.pokerLogic
 
 data class Player(
-    val id: Int,
-    val name: String,
-    val chips: Int,
-    val cards: List<PlayingCard> = emptyList(),
-    val action: Action = Action.WAIT,
-    val position: Position,
-    val isHero: Boolean = false,
-    val isDealer: Boolean = false,
-    val isSmallBlind: Boolean = false,
-    val isBigBlind: Boolean = false
+    var id: Int,
+    var name: String,
+    var chips: Int,
+    var cards: List<PlayingCard> = emptyList(),
+    var action: Action = Action.WAIT,
+    var position: Position,
+    var isHero: Boolean = false,
+    var isDealer: Boolean = false,
+    var isSmallBlind: Boolean = false,
+    var isBigBlind: Boolean = false
 )

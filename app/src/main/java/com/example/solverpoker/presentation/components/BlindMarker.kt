@@ -22,7 +22,7 @@ fun BlindMarker(
 ) {
     Box(
         modifier = modifier
-            .size(30.dp)
+            .size(40.dp)
             .background(color, CircleShape)
             .border(1.dp, Color.White, CircleShape),
         contentAlignment = Alignment.Center
