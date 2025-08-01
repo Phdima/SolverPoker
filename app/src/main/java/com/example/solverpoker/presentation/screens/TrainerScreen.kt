@@ -37,20 +37,37 @@ import com.example.solverpoker.presentation.viewmodel.TrainerViewModel
 @Composable
 fun TrainerScreen(viewModel: TrainerViewModel = hiltViewModel()) {
     val gameState by viewModel.gameState.collectAsState()
-    val positionsOrder =
-        listOf(Position.UTG, Position.MP, Position.CO, Position.BTN, Position.SB, Position.BB)
-    val heroPosition = gameState.players.find { it.isHero }?.position ?: Position.BTN
-    val hasRaiserBeforeHero = remember(gameState) {
-        gameState.players.any { player ->
-            !player.isHero &&
-                    positionsOrder.indexOf(player.position) < positionsOrder.indexOf(heroPosition) &&
-                    (player.action == Action.RAISE ||
-                            player.action == Action.THREE_BET ||
-                            player.action == Action.FOUR_BET ||
-                            player.action == Action.PUSH)
-        }
+    val lastAggressiveActionBeforeHero = remember(gameState) {
+        gameState.players
+            .filter {
+                !it.isHero
+            }
+            .mapNotNull { player ->
+                when (player.action) {
+                    Action.RAISE -> Action.RAISE to player
+                    Action.THREE_BET -> Action.THREE_BET to player
+                    Action.FOUR_BET -> Action.FOUR_BET to player
+                    Action.PUSH -> Action.PUSH to player
+                    else -> null
+                }
+            }
+            .lastOrNull()?.first
     }
-    val raiseAction = if (hasRaiserBeforeHero) Action.THREE_BET else Action.RAISE
+    val heroAggressiveAction = when (lastAggressiveActionBeforeHero) {
+        Action.RAISE -> Action.THREE_BET
+        Action.THREE_BET -> Action.FOUR_BET
+        Action.FOUR_BET -> Action.PUSH
+        Action.PUSH -> Action.PUSH // В случае пуша ответный пуш
+        else -> Action.RAISE // Если нет рейзеров перед героем
+    }
+    val actionText = when (heroAggressiveAction) {
+        Action.RAISE -> "Raise"
+        Action.THREE_BET -> "3-Bet"
+        Action.FOUR_BET -> "4-Bet"
+        Action.PUSH -> "Push"
+        else -> "Raise"
+    }
+
     val feedbackMessage by viewModel.feedbackMessage.collectAsState()
 
     BoxWithConstraints(
@@ -160,15 +177,15 @@ fun TrainerScreen(viewModel: TrainerViewModel = hiltViewModel()) {
             ) {
                 Button(
                     onClick = {
-                        viewModel.selectAction(raiseAction)
+                        viewModel.selectAction(heroAggressiveAction)
                         viewModel.checkAnswer()
                     },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (viewModel.action.value == raiseAction) Color.LightGray else MaterialTheme.colorScheme.primary
+                        containerColor = if (viewModel.action.value == heroAggressiveAction) Color.LightGray else MaterialTheme.colorScheme.primary
                     ),
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text(if (hasRaiserBeforeHero) "3-Bet" else "Raise")
+                    Text(actionText)
                 }
                 Button(
                     onClick = {
