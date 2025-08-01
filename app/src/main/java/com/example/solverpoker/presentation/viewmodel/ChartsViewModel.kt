@@ -80,7 +80,7 @@ class ChartsViewModel @Inject constructor(
     private fun loadCharts() {
         viewModelScope.launch {
             try {
-                val charts = Position.values().associateWith { position ->
+                val charts = Position.entries.associateWith { position ->
                     chartRepository.getChart(position) ?: throw Exception("Chart not found")
                 }
                 _state.value = ChartScreenState(

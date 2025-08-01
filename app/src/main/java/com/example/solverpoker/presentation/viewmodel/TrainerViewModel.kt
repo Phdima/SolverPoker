@@ -46,6 +46,8 @@ class TrainerViewModel @Inject constructor(
     private val _feedbackMessage = MutableStateFlow<String?>(null)
     val feedbackMessage: StateFlow<String?> = _feedbackMessage
 
+    private var preSimulationState = _gameState.value
+
     init {
         startNewHand()
     }
@@ -66,32 +68,35 @@ class TrainerViewModel @Inject constructor(
         _action.value = action
         viewModelScope.launch {
             val currentState = _gameState.value
+            preSimulationState = currentState.copy()
             val updatedState = currentState.updatePlayerAction(
                 currentState.players.find { it.isHero }?.id ?: return@launch,
                 action
             )
             _gameState.value = updatedState
 
-
             if (action != Action.FOLD && action != Action.CALL) {
                 val resumedState = resumeSimulateAfterHeroPreflop(updatedState)
                 _gameState.value = resumedState
-
+                val finalStateUpdate = resumeSimulationRound(resumedState)
+                _gameState.value = finalStateUpdate
             }
-            val finalStateUpdate = resumeSimulationRound(currentState)
 
-            _gameState.value = finalStateUpdate
+
         }
     }
 
     fun checkAnswer() {
         viewModelScope.launch {
-            checkCorrectAnswer()
+            _action.value?.let { checkCorrectAnswer(preSimulationState) }
         }
     }
 
     private suspend fun simulateUntilHeroPreflop(state: GameState): GameState {
-        Timber.d("Starting preflop simulation")
+        Timber.d(
+            "-------------------------------------- \n" +
+                    "Starting preflop simulation"
+        )
         var currentState = state
         var lastRaiser: Player? = findCurrentLastRaiser(state)
 
@@ -113,7 +118,8 @@ class TrainerViewModel @Inject constructor(
             Timber.d("Processing bot: ${player.position} with cards: ${player.cards.joinToString { it.toString() }}")
 
 
-            val action = determineBotAction(player, lastRaiser)
+            val currentLastRaiser = findCurrentLastRaiser(currentState)
+            val action = determineBotAction(player, currentLastRaiser)
             Timber.d("Bot ${player.position} decided to: $action")
 
             currentState = currentState.updatePlayerAction(player.id, action)
@@ -137,7 +143,7 @@ class TrainerViewModel @Inject constructor(
 
             }
 
-            if (lastRaiser?.action == Action.THREE_BET) {
+            if (action == Action.THREE_BET) {
                 Timber.d(
                     "+++++++++++++++++++++++++++++++ \n " +
                             "стартанули некст руку ибо был мультипот решение , которые не будут учитываться в первой версии прило. \n" +
@@ -159,7 +165,7 @@ class TrainerViewModel @Inject constructor(
     private suspend fun resumeSimulateAfterHeroPreflop(state: GameState): GameState {
         Timber.d("Resuming preflop simulation after hero action")
         var currentState = state
-        var lastRaiser: Player? = findCurrentLastRaiser(state)
+        var lastRaiser: Player? = findCurrentLastRaiser(currentState)
 
         // Правильный порядок действий в префлопе
         val playersInOrder = state.players.sortedBy { positionsOrder.indexOf(it.position) }
@@ -180,11 +186,13 @@ class TrainerViewModel @Inject constructor(
 
             Timber.d("Processing bot after hero: ${player.position} with cards: ${player.cards.joinToString { it.toString() }}")
 
+            lastRaiser = findCurrentLastRaiser(currentState)
             val action = determineBotAction(player, lastRaiser)
             Timber.d("Bot ${player.position} decided to: $action")
 
-            currentState = currentState.updatePlayerAction(player.id, action)
 
+
+            currentState = currentState.updatePlayerAction(player.id, action)
             // Обновляем последнего рейзера
             if (action == Action.RAISE || action == Action.THREE_BET ||
                 action == Action.FOUR_BET || action == Action.PUSH
@@ -195,36 +203,81 @@ class TrainerViewModel @Inject constructor(
 
         }
 
-        Timber.d("Resumed preflop simulation completed. Last raiser: ${lastRaiser?.position ?: "NONE"}")
+        Timber.d(
+            "Resumed preflop simulation completed. Last raiser: ${lastRaiser?.position ?: "NONE"}\n" +
+                    "------------------------------------"
+        )
         return currentState
     }
 
     private suspend fun resumeSimulationRound(state: GameState): GameState {
-        val currentState = state
+        Timber.d("Round preflop simulation")
+        var currentState = state
         var lastRaiser = findCurrentLastRaiser(currentState)
-        val activePlayers = currentState.players.filter { it.action != Action.FOLD || it.action == Action.CALL} // тут будет ошибка скорее всего
-        val heroIndex = activePlayers.indexOfFirst { it.isHero }
+        val activePlayers = currentState.players.filter { it.action != Action.FOLD }.toMutableList()
 
-        while (activePlayers.size >= 2){
-            activePlayers.find { !it.isHero }?.let { determineBotAction(it, lastRaiser) }
+
+        if (activePlayers.size <= 1) {
+            Timber.d("Only one active player left, skipping simulation")
+            return currentState
         }
 
+        val startPosition = lastRaiser?.position ?: Position.UTG
+        var currentIndex = positionsOrder.indexOf(startPosition)
+        var actionsCount = 0
+        val maxActions = activePlayers.size * 3
+        val actedPlayers = mutableSetOf<Int>()
 
-    }
+        currentIndex = (currentIndex + 1) % positionsOrder.size
+        Timber.d("Starting from position: ${positionsOrder[currentIndex]}")
 
-    private fun findCurrentLastRaiser(state: GameState): Player? {
-        return state.players
-            .filter { player ->
-                if (player.action != null) {
-                    player.action == Action.RAISE ||
-                            player.action == Action.THREE_BET ||
-                            player.action == Action.FOUR_BET ||
-                            player.action == Action.PUSH
-                } else {
-                    return null
+        while (activePlayers.size > 1 && actionsCount < maxActions) {
+            val currentPosition = positionsOrder[currentIndex]
+            val player = activePlayers.find {
+                it.position == currentPosition && it.action != Action.FOLD && it.id !in actedPlayers
+            }
+
+
+            if (player != null && !player.isHero) {
+                Timber.d("Processing bot: ${player.position} with cards: ${player.cards}")
+
+                lastRaiser = findCurrentLastRaiser(currentState)
+                val action = determineBotAction(player, lastRaiser)
+                Timber.d("Bot ${player.position} decided to: $action")
+
+                currentState = currentState.updatePlayerAction(player.id, action)
+                actionsCount++
+                actedPlayers.add(player.id)
+
+                if (action == Action.FOLD || action == Action.CALL) {
+                    activePlayers.removeAll { it.id == player.id }
+                }
+
+                if (action == Action.RAISE || action == Action.THREE_BET ||
+                    action == Action.FOUR_BET || action == Action.PUSH
+                ) {
+                    lastRaiser = player
+                    Timber.d("New last raiser: ${player.position}")
                 }
             }
-            .maxByOrNull { positionsOrder.indexOf(it.position) }
+            currentIndex = (currentIndex + 1) % positionsOrder.size
+
+            if (positionsOrder[currentIndex] == startPosition) {
+                Timber.d("Completed full circle")
+                if (actedPlayers.size >= activePlayers.size || actedPlayers.isEmpty()) {
+                    Timber.d("Ending simulation after full circle")
+                    break
+                }
+                actedPlayers.clear()
+                Timber.d("Starting new betting round")
+            }
+
+        }
+        Timber.d(
+            "Round preflop simulation completed. Last raiser: ${lastRaiser?.position ?: "NONE"}\n" +
+                    "------------------------------------"
+        )
+        return currentState
     }
 
 
@@ -309,17 +362,18 @@ class TrainerViewModel @Inject constructor(
         }
     }
 
-    private suspend fun checkCorrectAnswer() {
+    private suspend fun checkCorrectAnswer(preSimulationState: GameState,) {
         Timber.d("Checking correct answer...")
 
         // Находим последнего рейзера перед героем
-        val raiser = findLastRaiserBeforeHero()
+        val raiser = findLastRaiserBeforeHero(preSimulationState.copy())
         val opponentPosition = raiser?.position
 
         if (opponentPosition == null) {
             Timber.d("No raiser found before hero")
+
         } else {
-            Timber.d("Last raiser before hero: $opponentPosition")
+            Timber.d("Last raiser before hero: $opponentPosition" + " " + "${raiser?.action}")
         }
 
         val action = _action.value ?: return.also {
@@ -329,7 +383,7 @@ class TrainerViewModel @Inject constructor(
         Timber.d("User selected action: $action")
 
         val result = try {
-            val hero = gameState.value.players.find { it.isHero } ?: return
+            val hero = preSimulationState.players.find { it.isHero } ?: return
             val heroCards = hero.cards
             if (heroCards.size != 2) {
                 Timber.e("Hero doesn't have 2 cards")
@@ -348,6 +402,7 @@ class TrainerViewModel @Inject constructor(
                             rangeChecker.isHandInRange(handNotation, raiseRange).also {
                                 Timber.d("Hand in open raise range: $it")
                             }
+
                         } else {
                             false
                         }
@@ -372,9 +427,19 @@ class TrainerViewModel @Inject constructor(
                     }
 
                     Action.CALL -> {
-                        Timber.d("Checking CALL action")
-                        val callRange = chart.vsOpenRaise?.get(opponentPosition)?.get(Action.CALL)
-                            ?: emptyList()
+                        Timber.d("Checking CALL action vs $opponentPosition + ${raiser?.action}")
+                        val callRange = when (raiser?.action) {
+                            Action.RAISE ->
+                                chart.vsOpenRaise?.get(opponentPosition)?.get(Action.CALL)
+                            Action.THREE_BET ->
+                                chart.vsThreeBet?.get(opponentPosition)?.get(Action.CALL)
+                            Action.FOUR_BET ->
+                                chart.vsFourBet?.get(opponentPosition)?.get(Action.CALL)
+                            Action.PUSH ->
+                                chart.vsPush?.get(opponentPosition)?.get(Action.CALL)
+                            else -> null
+                        } ?: emptyList()
+
                         rangeChecker.isHandInRange(handNotation, callRange).also {
                             Timber.d("Hand in call range: $it")
                         }
@@ -400,15 +465,41 @@ class TrainerViewModel @Inject constructor(
                                 rangeChecker.isHandInRange(handNotation, it)
                             } ?: false
 
-                        Timber.d("Hand in ranges: openRaise=$inOpenRaise, call=$inCallRange, 3bet=$inThreeBet")
+                        val inFourBet =
+                            chart.vsThreeBet?.get(opponentPosition)?.get(Action.FOUR_BET)?.let {
+                                rangeChecker.isHandInRange(handNotation, it)
+                            } ?: false
 
-                        !(inOpenRaise || inCallRange || inThreeBet)
+                        val inCallRangeForThreeBet =
+                            chart.vsThreeBet?.get(opponentPosition)?.get(Action.CALL)?.let {
+                                rangeChecker.isHandInRange(handNotation, it)
+                            } ?: false
+
+                        val inPush =
+                            chart.vsFourBet?.get(opponentPosition)?.get(Action.PUSH)?.let {
+                                rangeChecker.isHandInRange(handNotation, it)
+                            } ?: false
+
+                        val inCallRangeForFourBet =
+                            chart.vsFourBet?.get(opponentPosition)?.get(Action.CALL)?.let {
+                                rangeChecker.isHandInRange(handNotation, it)
+                            } ?: false
+
+                        val inCallRangeForPush =
+                            chart.vsPush?.get(opponentPosition)?.get(Action.CALL)?.let {
+                                rangeChecker.isHandInRange(handNotation, it)
+                            } ?: false
+
+                        Timber.d("Hand in ranges: openRaise=$inOpenRaise, call=$inCallRange $inCallRangeForThreeBet $inCallRangeForFourBet $inCallRangeForPush, 3bet=$inThreeBet, 4bet =$inFourBet, push =$inPush")
+
+                        !(inOpenRaise || inCallRange || inThreeBet || inFourBet || inCallRangeForThreeBet || inPush || inCallRangeForFourBet || inCallRangeForPush)
                     }
 
                     Action.WAIT -> {
                         false
                     }
                 }
+
             }
         } catch (e: Exception) {
             Timber.e(e, "Error checking correct answer")
@@ -420,27 +511,49 @@ class TrainerViewModel @Inject constructor(
         _feedbackMessage.value = generateFeedbackMessage(action, result)
     }
 
-    private fun findLastRaiserBeforeHero(): Player? {
+    private fun findLastRaiserBeforeHero(state: GameState): Player? {
+        val players = state.players
+        val hero = players.find { it.isHero } ?: return null
+        val heroPositionIndex = positionsOrder.indexOf(hero.position)
 
-        // Сортируем игроков по реальному порядку действий
-        val playersInActionOrder = gameState.value.players.sortedBy {
-            positionsOrder.indexOf(it.position)
+        // Собираем всех рейзеров (кроме героя)
+        val raisers = players.filter { player ->
+            player.id != hero.id && (
+                    player.action == Action.RAISE ||
+                            player.action == Action.THREE_BET ||
+                            player.action == Action.FOUR_BET ||
+                            player.action == Action.PUSH
+                    )
         }
 
-        // Находим индекс героя в правильном порядке действий
-        val heroIndex = playersInActionOrder.indexOfFirst { it.isHero }
-        if (heroIndex == -1) return null
+        if (raisers.isEmpty()) return null
 
-        // Ищем только среди игроков, которые действуют ДО героя
-        return playersInActionOrder
-            .subList(0, heroIndex)
-            .reversed()
-            .firstOrNull { player ->
-                player.action == Action.RAISE ||
-                        player.action == Action.THREE_BET ||
-                        player.action == Action.FOUR_BET ||
-                        player.action == Action.PUSH
+        // Вычисляем циклическое расстояние до героя
+        return raisers.maxByOrNull { raiser ->
+            val raiserIndex = positionsOrder.indexOf(raiser.position)
+            if (raiserIndex < heroPositionIndex) {
+                // Рейзер перед героем в обычном порядке
+                raiserIndex + positionsOrder.size
+            } else {
+                // Рейзер после героя в обычном порядке (но перед ним в циклическом)
+                raiserIndex
             }
+        }
+    }
+
+
+    private fun findCurrentLastRaiser(state: GameState): Player? {
+        Timber.d("Finding raiser. Players: ${state.players.map { "${it.position}:${it.action}" }}")
+        return state.players
+            .filter { player ->
+                player.action?.let { action ->
+                    action == Action.RAISE ||
+                            action == Action.THREE_BET ||
+                            action == Action.FOUR_BET ||
+                            action == Action.PUSH
+                } ?: false
+            }
+            .maxByOrNull { positionsOrder.indexOf(it.position) }
     }
 
     private fun generateFeedbackMessage(action: Action, isCorrect: Boolean): String {
@@ -449,10 +562,14 @@ class TrainerViewModel @Inject constructor(
             isCorrect && action == Action.CALL -> "Правильно! Рука в диапазоне для колла"
             isCorrect && action == Action.FOLD -> "Правильно! Рука вне диапазона"
             isCorrect && action == Action.THREE_BET -> "Правильно! Рука в диапазоне для 3-бета"
+            isCorrect && action == Action.FOUR_BET -> "Правильно! Рука в диапазоне для 4-бета"
+            isCorrect && action == Action.PUSH -> "Правильно! Рука в диапазоне для Пуша"
             !isCorrect && action == Action.RAISE -> "Неправильно! Рука вне диапазона для рейза"
             !isCorrect && action == Action.CALL -> "Неправильно! Рука вне диапазона для колла"
             !isCorrect && action == Action.FOLD -> "Неправильно! Рука в диапазоне, не нужно фолдить"
             !isCorrect && action == Action.THREE_BET -> "Неправильно! Рука вне диапазона для 3-бета"
+            !isCorrect && action == Action.FOUR_BET -> "Неправильно! Рука вне диапазона для 4-бета"
+            !isCorrect && action == Action.PUSH -> "Неправильно! Рука вне диапазона для Пуша"
             else -> "Результат неизвестен"
         }
     }

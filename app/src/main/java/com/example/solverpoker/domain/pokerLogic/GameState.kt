@@ -31,6 +31,7 @@ data class GameState(
             dealerPosition = newDealerPosition,
             players = players.mapIndexed { index, player ->
                 player.copy(
+                    action = Action.WAIT,
                     position = newPositions[index],
                     isDealer = index == newDealerPosition,
                     isSmallBlind = index == (newDealerPosition + 1) % players.size,
