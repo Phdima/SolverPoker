@@ -74,9 +74,13 @@ class TrainerViewModel @Inject constructor(
 
 
             if (action != Action.FOLD && action != Action.CALL) {
-                val resumedState = resumeSimulatePreflop(updatedState)
+                val resumedState = resumeSimulateAfterHeroPreflop(updatedState)
                 _gameState.value = resumedState
+
             }
+            val finalStateUpdate = resumeSimulationRound(currentState)
+
+            _gameState.value = finalStateUpdate
         }
     }
 
@@ -89,7 +93,7 @@ class TrainerViewModel @Inject constructor(
     private suspend fun simulateUntilHeroPreflop(state: GameState): GameState {
         Timber.d("Starting preflop simulation")
         var currentState = state
-        var lastRaiser: Player? = null
+        var lastRaiser: Player? = findCurrentLastRaiser(state)
 
 
         val playersInOrder = state.players.sortedBy { positionsOrder.indexOf(it.position) }
@@ -120,6 +124,7 @@ class TrainerViewModel @Inject constructor(
             ) {
                 lastRaiser = player
                 Timber.d("New last raiser: ${player.position}")
+
             }
             if (lastRaiser == null && playersInOrder.getOrNull(heroIndex)?.position == Position.BB) {
                 Timber.d(
@@ -151,7 +156,7 @@ class TrainerViewModel @Inject constructor(
         return currentState
     }
 
-    private suspend fun resumeSimulatePreflop(state: GameState): GameState {
+    private suspend fun resumeSimulateAfterHeroPreflop(state: GameState): GameState {
         Timber.d("Resuming preflop simulation after hero action")
         var currentState = state
         var lastRaiser: Player? = findCurrentLastRaiser(state)
@@ -194,13 +199,30 @@ class TrainerViewModel @Inject constructor(
         return currentState
     }
 
+    private suspend fun resumeSimulationRound(state: GameState): GameState {
+        val currentState = state
+        var lastRaiser = findCurrentLastRaiser(currentState)
+        val activePlayers = currentState.players.filter { it.action != Action.FOLD || it.action == Action.CALL} // тут будет ошибка скорее всего
+        val heroIndex = activePlayers.indexOfFirst { it.isHero }
+
+        while (activePlayers.size >= 2){
+            activePlayers.find { !it.isHero }?.let { determineBotAction(it, lastRaiser) }
+        }
+
+
+    }
+
     private fun findCurrentLastRaiser(state: GameState): Player? {
         return state.players
             .filter { player ->
-                player.action == Action.RAISE ||
-                        player.action == Action.THREE_BET ||
-                        player.action == Action.FOUR_BET ||
-                        player.action == Action.PUSH
+                if (player.action != null) {
+                    player.action == Action.RAISE ||
+                            player.action == Action.THREE_BET ||
+                            player.action == Action.FOUR_BET ||
+                            player.action == Action.PUSH
+                } else {
+                    return null
+                }
             }
             .maxByOrNull { positionsOrder.indexOf(it.position) }
     }
@@ -215,7 +237,7 @@ class TrainerViewModel @Inject constructor(
         Timber.d("Determining action for ${player.position} with hand: $handNotation")
 
         // Проверка невалидных действий lastRaiser
-        if (lastRaiser == null ) {
+        if (lastRaiser == null) {
             Timber.d("No valid raiser - checking open raise range")
             val openRaiseRange = chart.openRaise ?: emptyList()
             return if (rangeChecker.isHandInRange(handNotation, openRaiseRange)) {
@@ -272,7 +294,11 @@ class TrainerViewModel @Inject constructor(
                 val callRange = chart.vsPush?.get(lastRaiser.position)
                     ?.get(Action.CALL) ?: emptyList()
 
-                if (rangeChecker.isHandInRange(handNotation, callRange)) Action.CALL else Action.FOLD
+                if (rangeChecker.isHandInRange(
+                        handNotation,
+                        callRange
+                    )
+                ) Action.CALL else Action.FOLD
             }
 
             // Обработка неожиданных действий
