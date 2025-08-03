@@ -10,14 +10,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -26,10 +25,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.solverpoker.domain.pokerLogic.Action
-import com.example.solverpoker.domain.pokerLogic.Position
 import com.example.solverpoker.domain.pokerLogic.displaySymbol
 import com.example.solverpoker.presentation.components.PlayerProfile
 import com.example.solverpoker.presentation.viewmodel.TrainerViewModel
@@ -53,12 +53,13 @@ fun TrainerScreen(viewModel: TrainerViewModel = hiltViewModel()) {
             }
             .lastOrNull()?.first
     }
+
     val heroAggressiveAction = when (lastAggressiveActionBeforeHero) {
         Action.RAISE -> Action.THREE_BET
         Action.THREE_BET -> Action.FOUR_BET
         Action.FOUR_BET -> Action.PUSH
-        Action.PUSH -> Action.PUSH // В случае пуша ответный пуш
-        else -> Action.RAISE // Если нет рейзеров перед героем
+        Action.PUSH -> Action.PUSH
+        else -> Action.RAISE
     }
     val actionText = when (heroAggressiveAction) {
         Action.RAISE -> "Raise"
@@ -67,13 +68,38 @@ fun TrainerScreen(viewModel: TrainerViewModel = hiltViewModel()) {
         Action.PUSH -> "Push"
         else -> "Raise"
     }
+    val hasAggressiveAction = remember(gameState) {
+        val aggressiveAction =
+            gameState.players.any { it.action == Action.RAISE || it.action == Action.THREE_BET || it.action == Action.FOUR_BET || it.action == Action.PUSH }
+
+        aggressiveAction
+    }
+    val hasCallOrFold = remember(gameState) {
+        val callExists = gameState.players.any { it.action == Action.CALL }
+        val foldCount = gameState.players.count { it.action == Action.FOLD }
+        val heroChoice = gameState.players.filter { it.isHero }.any { it.action == Action.FOLD }
+
+        callExists || foldCount == 5 || viewModel.answerResult.value == false || heroChoice
+    }
+
+    val colorScheme = MaterialTheme.colorScheme
+
+    val colorForProfileBorder = remember(gameState) {
+        gameState.players.map { player ->
+            when (player.action) {
+                Action.FOLD -> Color.Red
+                Action.WAIT -> colorScheme.inversePrimary
+                else -> colorScheme.secondary
+            }
+        }
+    }
 
     val feedbackMessage by viewModel.feedbackMessage.collectAsState()
 
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Color.Gray)
+            .background(color = MaterialTheme.colorScheme.background)
     ) {
         val tableWidth = maxWidth * 0.9f
         val tableHeight = maxHeight * 0.8f
@@ -85,7 +111,7 @@ fun TrainerScreen(viewModel: TrainerViewModel = hiltViewModel()) {
             Modifier
                 .align(Alignment.TopCenter)
                 .size(tableWidth, tableHeight)
-                .padding(top = 30.dp)
+                .padding(top = 5.dp)
 
         )
         {
@@ -93,12 +119,12 @@ fun TrainerScreen(viewModel: TrainerViewModel = hiltViewModel()) {
                 modifier = Modifier
                     .size(tableWidth, tableHeight)
                     .background(
-                        color = Color(0xFF2E7D32),
+                        color = MaterialTheme.colorScheme.primary,
                         shape = RoundedCornerShape(16.dp)
                     )
                     .border(
                         width = 4.dp,
-                        color = Color(0xFF4CAF50),
+                        color = MaterialTheme.colorScheme.secondaryContainer,
                         shape = RoundedCornerShape(16.dp)
                     )
 
@@ -113,12 +139,14 @@ fun TrainerScreen(viewModel: TrainerViewModel = hiltViewModel()) {
                     PlayerProfile(
                         modifier = Modifier
                             .size(playerSize),
-                        player = gameState.players[5]
+                        player = gameState.players[5],
+                        color = colorForProfileBorder[5]
                     )
                     PlayerProfile(
                         modifier = Modifier
                             .size(playerSize),
-                        player = gameState.players[4]
+                        player = gameState.players[4],
+                        color = colorForProfileBorder[4]
                     )
                 }
                 Column(
@@ -130,99 +158,130 @@ fun TrainerScreen(viewModel: TrainerViewModel = hiltViewModel()) {
                     PlayerProfile(
                         modifier = Modifier
                             .size(playerSize),
-                        player = gameState.players[1]
+                        player = gameState.players[1],
+                        color = colorForProfileBorder[1]
                     )
                     PlayerProfile(
                         modifier = Modifier
                             .size(playerSize),
-                        player = gameState.players[2]
+                        player = gameState.players[2],
+                        color = colorForProfileBorder[2]
                     )
                 }
                 PlayerProfile(
                     modifier = Modifier
                         .size(playerSize)
                         .align(Alignment.TopCenter),
-                    player = gameState.players[0]
+                    player = gameState.players[0],
+                    color = colorForProfileBorder[0]
                 )
                 PlayerProfile(
                     modifier = Modifier
                         .size(playerSize)
                         .align(Alignment.BottomCenter),
-                    player = gameState.players[3]
+                    player = gameState.players[3],
+                    color = colorForProfileBorder[3]
                 )
             }
 
+
+        }
+        feedbackMessage?.let {
+            Text(
+                text = it,
+                color = when (viewModel.answerResult.value) {
+                    true -> MaterialTheme.colorScheme.secondary
+                    false -> Color.Red
+                    else -> Color.Gray
+                },
+                modifier = Modifier
+                    .align(Alignment.TopCenter) // Выравниваем по верхнему центру
+                    .fillMaxWidth(0.9f) // Занимаем 90% ширины
+                    .padding(top = tableHeight * 1.01f) // Отступ ниже стола
+                    .background(
+                        MaterialTheme.colorScheme.primary,
+                        shape = RoundedCornerShape(size = 40.dp)
+                    ),
+                textAlign = TextAlign.Center
+            )
         }
         Column(
             modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(20.dp)
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 20.dp)
         ) {
 
             // DebugPositionView()
-            feedbackMessage?.let {
-                Text(
-                    text = it,
-                    color = when (viewModel.answerResult.value) {
-                        true -> Color.Green
-                        false -> Color.Red
-                        else -> Color.Gray
-                    },
-                    modifier = Modifier.padding(8.dp)
-                )
-            }
 
-            Row(
-
-            ) {
-                Button(
+            Row {
+                TextButton(
                     onClick = {
                         viewModel.selectAction(heroAggressiveAction)
                         viewModel.checkAnswer()
                     },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (viewModel.action.value == heroAggressiveAction) Color.LightGray else MaterialTheme.colorScheme.primary
+                    enabled = !hasCallOrFold,
+                    colors = ButtonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                        disabledContentColor = MaterialTheme.colorScheme.onPrimary,
+                        disabledContainerColor = MaterialTheme.colorScheme.primary
                     ),
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text(actionText)
+                    Text(
+                        actionText,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
                 }
-                Button(
+
+                TextButton(
                     onClick = {
                         viewModel.selectAction(Action.CALL)
                         viewModel.checkAnswer()
                     },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (viewModel.action.value == Action.CALL) Color.LightGray else MaterialTheme.colorScheme.primary
+                    colors = ButtonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                        disabledContentColor = MaterialTheme.colorScheme.onPrimary,
+                        disabledContainerColor = MaterialTheme.colorScheme.primary
                     ),
+                    enabled = !hasCallOrFold && hasAggressiveAction,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("Call")
+                    Text("Call", maxLines = 1)
                 }
 
-                Button(
+                TextButton(
                     onClick = {
                         viewModel.selectAction(Action.FOLD)
                         viewModel.checkAnswer()
-
                     },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (viewModel.action.value == Action.FOLD) Color.LightGray else MaterialTheme.colorScheme.primary
+                    colors = ButtonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                        disabledContentColor = MaterialTheme.colorScheme.onPrimary,
+                        disabledContainerColor = MaterialTheme.colorScheme.primary
                     ),
+                    enabled = !hasCallOrFold,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("Fold")
+                    Text("Fold", maxLines = 1)
                 }
-                Button(
+
+                TextButton(
                     onClick = {
                         viewModel.startNewHand()
                     },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (viewModel.action.value == Action.FOLD) Color.LightGray else MaterialTheme.colorScheme.primary
+                    colors = ButtonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                        disabledContentColor = MaterialTheme.colorScheme.onPrimary,
+                        disabledContainerColor = MaterialTheme.colorScheme.primary
                     ),
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("nextHand")
+                    Text("Next", maxLines = 1)
                 }
             }
 

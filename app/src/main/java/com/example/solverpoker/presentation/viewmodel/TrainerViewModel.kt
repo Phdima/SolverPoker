@@ -54,6 +54,9 @@ class TrainerViewModel @Inject constructor(
 
     fun startNewHand() {
         viewModelScope.launch {
+            _action.value = null
+            _answerResult.value = null
+            _feedbackMessage.value = null
             deck.resetAndShuffle()
             _gameState.value = _gameState.value.nextHand()
             val currentState = _gameState.value
@@ -558,18 +561,18 @@ class TrainerViewModel @Inject constructor(
 
     private fun generateFeedbackMessage(action: Action, isCorrect: Boolean): String {
         return when {
-            isCorrect && action == Action.RAISE -> "Правильно! Рука в диапазоне для рейза"
-            isCorrect && action == Action.CALL -> "Правильно! Рука в диапазоне для колла"
+            isCorrect && action == Action.RAISE -> "Правильно! Рука в диапазоне"
+            isCorrect && action == Action.CALL -> "Правильно! Рука в диапазоне"
             isCorrect && action == Action.FOLD -> "Правильно! Рука вне диапазона"
-            isCorrect && action == Action.THREE_BET -> "Правильно! Рука в диапазоне для 3-бета"
-            isCorrect && action == Action.FOUR_BET -> "Правильно! Рука в диапазоне для 4-бета"
-            isCorrect && action == Action.PUSH -> "Правильно! Рука в диапазоне для Пуша"
-            !isCorrect && action == Action.RAISE -> "Неправильно! Рука вне диапазона для рейза"
-            !isCorrect && action == Action.CALL -> "Неправильно! Рука вне диапазона для колла"
-            !isCorrect && action == Action.FOLD -> "Неправильно! Рука в диапазоне, не нужно фолдить"
-            !isCorrect && action == Action.THREE_BET -> "Неправильно! Рука вне диапазона для 3-бета"
-            !isCorrect && action == Action.FOUR_BET -> "Неправильно! Рука вне диапазона для 4-бета"
-            !isCorrect && action == Action.PUSH -> "Неправильно! Рука вне диапазона для Пуша"
+            isCorrect && action == Action.THREE_BET -> "Правильно! Рука в диапазоне"
+            isCorrect && action == Action.FOUR_BET -> "Правильно! Рука в диапазоне"
+            isCorrect && action == Action.PUSH -> "Правильно! Рука в диапазоне"
+            !isCorrect && action == Action.RAISE -> "Неправильно! Рука вне диапазона"
+            !isCorrect && action == Action.CALL -> "Неправильно! Рука вне диапазона"
+            !isCorrect && action == Action.FOLD -> "Неправильно! Рука в диапазоне"
+            !isCorrect && action == Action.THREE_BET -> "Неправильно! Рука вне диапазона"
+            !isCorrect && action == Action.FOUR_BET -> "Неправильно! Рука вне диапазона"
+            !isCorrect && action == Action.PUSH -> "Неправильно! Рука вне диапазона"
             else -> "Результат неизвестен"
         }
     }
@@ -602,9 +605,9 @@ class TrainerViewModel @Inject constructor(
 
     private fun createInitialGameState(): GameState {
         val players = listOf(
-            Player(1, "Alice0", 1000, cards = deck.drawCard(), position = Position.UTG),
-            Player(2, "Bob1", 1000, cards = deck.drawCard(), position = Position.MP),
-            Player(3, "Charlie2", 1000, cards = deck.drawCard(), position = Position.CO),
+            Player(1, "Alice", 1000, cards = deck.drawCard(), position = Position.UTG),
+            Player(2, "Bob", 1000, cards = deck.drawCard(), position = Position.MP),
+            Player(3, "Charlie", 1000, cards = deck.drawCard(), position = Position.CO),
             Player(
                 4,
                 "HERO",
@@ -613,8 +616,8 @@ class TrainerViewModel @Inject constructor(
                 position = Position.BTN,
                 isHero = true
             ),
-            Player(5, "Sasha4", 1000, cards = deck.drawCard(), position = Position.SB),
-            Player(6, "Masha5", 1000, cards = deck.drawCard(), position = Position.BB)
+            Player(5, "Sasha", 1000, cards = deck.drawCard(), position = Position.SB),
+            Player(6, "Masha", 1000, cards = deck.drawCard(), position = Position.BB)
         )
         return GameState(
             players = players,

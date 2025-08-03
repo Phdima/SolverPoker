@@ -49,8 +49,7 @@ fun PokerCard(
         if (isHero) {
             FaceUpCardContent(card)
         } else {
-            FaceUpCardContent(card)
-            //CardBack()
+            CardBack()
         }
     }
 }
