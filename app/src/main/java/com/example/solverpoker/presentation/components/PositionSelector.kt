@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,6 +30,7 @@ fun PositionSelector(
     Column(modifier = modifier) {
         Text(
             text = title,
+            color = MaterialTheme.colorScheme.onPrimary,
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(bottom = 8.dp)
         )
@@ -54,19 +56,20 @@ private fun PositionChip(
     onClick: () -> Unit
 ) {
     Box(
+
         modifier = Modifier
             .clip(RoundedCornerShape(8.dp))
             .clickable(onClick = onClick)
             .background(
-                color = if (isSelected) MaterialTheme.colorScheme.primary
-                else MaterialTheme.colorScheme.surfaceVariant
+                color = if (isSelected) MaterialTheme.colorScheme.secondary
+                else MaterialTheme.colorScheme.primary
             )
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Text(
             text = position.name,
             color = if (isSelected) MaterialTheme.colorScheme.onPrimary
-            else MaterialTheme.colorScheme.onSurfaceVariant,
+            else MaterialTheme.colorScheme.onPrimary,
             style = MaterialTheme.typography.labelMedium
         )
     }

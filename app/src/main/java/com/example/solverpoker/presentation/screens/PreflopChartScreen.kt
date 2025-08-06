@@ -1,5 +1,6 @@
 package com.example.solverpoker.presentation.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -21,29 +22,17 @@ import com.example.solverpoker.presentation.stateholder.ChartScreenState
 import com.example.solverpoker.presentation.viewmodel.ChartsViewModel
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun PreflopChartScreen(viewModel: ChartsViewModel = hiltViewModel()) {
     val state = viewModel.state.value
     val hands = viewModel.getHandsForMatrix(state)
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Preflop Charts") },
-                colors = TopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.secondary,
-                    scrolledContainerColor = MaterialTheme.colorScheme.secondary,
-                    navigationIconContentColor = MaterialTheme.colorScheme.secondary,
-                    titleContentColor = MaterialTheme.colorScheme.background,
-                    actionIconContentColor = MaterialTheme.colorScheme.secondary,
-                )
-            )
-        }
-    ) { padding ->
+
         Column(
             Modifier
                 .fillMaxSize()
-                .padding(padding)
+                .background(color = MaterialTheme.colorScheme.background)
+
         ) {
 
             PokerHandMatrix(
@@ -53,6 +42,6 @@ fun PreflopChartScreen(viewModel: ChartsViewModel = hiltViewModel()) {
 
             ChartControls()
         }
-    }
+
 }
 

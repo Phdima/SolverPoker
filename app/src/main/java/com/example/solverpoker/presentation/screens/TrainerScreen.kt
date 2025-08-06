@@ -170,8 +170,8 @@ fun TrainerScreen(viewModel: TrainerViewModel = hiltViewModel()) {
                 }
                 PlayerProfile(
                     modifier = Modifier
-                        .size(playerSize)
-                        .align(Alignment.TopCenter),
+                        .align(Alignment.TopCenter)
+                        .size(playerSize),
                     player = gameState.players[0],
                     color = colorForProfileBorder[0]
                 )
