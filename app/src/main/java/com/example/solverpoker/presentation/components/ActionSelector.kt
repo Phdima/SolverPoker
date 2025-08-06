@@ -24,11 +24,12 @@ import com.example.solverpoker.domain.pokerLogic.DefenseAction
 fun ActionSelector(
     selectedAction: DefenseAction,
     validActions: List<DefenseAction>,
-    onActionSelected: (DefenseAction) -> Unit
+    onActionSelected: (DefenseAction) -> Unit,
 ) {
     Column {
         Text(
             text = "Выберите действие:",
+            color = MaterialTheme.colorScheme.onPrimary,
             style = MaterialTheme.typography.titleMedium,
         )
 
@@ -40,16 +41,15 @@ fun ActionSelector(
                     onClick = { onActionSelected(action) },
                     label = {
                         Text(
-                            action.name, color = if (action == selectedAction) MaterialTheme.colorScheme.onPrimary
-                            else MaterialTheme.colorScheme.onSurfaceVariant,
+                            action.name,
+                            color = if (action == selectedAction) MaterialTheme.colorScheme.onPrimary
+                            else MaterialTheme.colorScheme.onPrimary,
                             style = MaterialTheme.typography.labelMedium
                         )
                     },
                     colors = AssistChipDefaults.assistChipColors(
-                        containerColor = if (action == selectedAction)
-                            MaterialTheme.colorScheme.primary
-                        else
-                            MaterialTheme.colorScheme.surfaceVariant
+                        containerColor = if (action == selectedAction) MaterialTheme.colorScheme.secondary
+                        else MaterialTheme.colorScheme.primary
                     ),
                     border = null
                 )

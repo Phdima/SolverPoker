@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,74 +28,92 @@ import com.example.solverpoker.presentation.viewmodel.ChartsViewModel
 @Composable
 fun ChartControls(viewModel: ChartsViewModel = hiltViewModel()) {
     val state = viewModel.state.value
+    val textColor = MaterialTheme.colorScheme.onPrimary
+    LazyColumn(modifier = Modifier.padding(16.dp)) {
 
-    LazyColumn (modifier = Modifier.padding(16.dp)) {
+        item {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 5.dp)
+                    .background(
+                        MaterialTheme.colorScheme.primary,
+                        shape = RoundedCornerShape(size = 40.dp)
+                    ),
+                horizontalArrangement = Arrangement.SpaceEvenly
 
-      item {
-          Row(
-              modifier = Modifier
-                  .fillMaxWidth()
-                  .padding(bottom = 5.dp),
-              horizontalArrangement = Arrangement.SpaceEvenly
-          ) {
+            ) {
 
-              Box(
-                  modifier = Modifier
-                      .background(color = Color(0xFF4CAF50))
-                      .size(15.dp)
-                      .align(alignment = Alignment.CenterVertically)
-              )
-              Text(
-                  "- Raise/call",
-                  modifier = Modifier.align(alignment = Alignment.CenterVertically)
-              )
+                Box(
+                    modifier = Modifier
+                        .background(color = Color(0xFF4CAF50),  shape = RoundedCornerShape(size = 40.dp))
+                        .size(15.dp)
+                        .align(alignment = Alignment.CenterVertically)
+                )
+                Text(
+                    "- Raise/call",
+                    modifier = Modifier.align(alignment = Alignment.CenterVertically),
+                    color = textColor
+                )
 
-              Box(
-                  modifier = Modifier
-                      .background(color = Color.Yellow)
-                      .size(15.dp)
-                      .align(alignment = Alignment.CenterVertically)
-              )
-              Text("- 3bet", modifier = Modifier.align(alignment = Alignment.CenterVertically))
+                Box(
+                    modifier = Modifier
+                        .background(color = Color.Yellow,  shape = RoundedCornerShape(size = 40.dp))
+                        .size(15.dp)
+                        .align(alignment = Alignment.CenterVertically)
+                )
+                Text(
+                    "- 3bet",
+                    modifier = Modifier.align(alignment = Alignment.CenterVertically),
+                    color = textColor
+                )
 
-              Box(
-                  modifier = Modifier
-                      .background(color = Color(0xFF2196F3))
-                      .size(15.dp)
-                      .align(alignment = Alignment.CenterVertically)
-              )
-              Text("- 4bet/Push", modifier = Modifier.align(alignment = Alignment.CenterVertically))
-
-
-              Box(
-                  modifier = Modifier
-                      .background(color = Color(0xFFF44336))
-                      .size(15.dp)
-                      .align(alignment = Alignment.CenterVertically)
-              )
-              Text("- Fold", modifier = Modifier.align(alignment = Alignment.CenterVertically))
-          }
-      }
-      item{
-          PositionSelector(
-              title = "Ваша позиция:",
-              selectedPosition = state.heroPosition,
-              onPositionSelected = viewModel::selectHeroPosition
-          )
-      }
+                Box(
+                    modifier = Modifier
+                        .background(color = Color(0xFF2196F3),  shape = RoundedCornerShape(size = 40.dp))
+                        .size(15.dp)
+                        .align(alignment = Alignment.CenterVertically)
+                )
+                Text(
+                    "- 4bet/Push",
+                    modifier = Modifier.align(alignment = Alignment.CenterVertically),
+                    color = textColor
+                )
 
 
+                Box(
+                    modifier = Modifier
+                        .background(color = Color(0xFFF44336),  shape = RoundedCornerShape(size = 40.dp))
+                        .size(15.dp)
+                        .align(alignment = Alignment.CenterVertically)
+                )
+                Text(
+                    "- Fold",
+                    modifier = Modifier.align(alignment = Alignment.CenterVertically),
+                    color = textColor
+                )
+            }
+        }
+        item {
+            PositionSelector(
+                title = "Ваша позиция:",
+                selectedPosition = state.heroPosition,
+                onPositionSelected = viewModel::selectHeroPosition
+            )
+        }
 
-      item{
-          ActionSelector(
-              selectedAction = state.selectedAction,
-              validActions = getValidOption(state.heroPosition),
-              onActionSelected = viewModel::selectDefenseAction
-          )
-      }
+
+
+        item {
+            ActionSelector(
+                selectedAction = state.selectedAction,
+                validActions = getValidOption(state.heroPosition),
+                onActionSelected = viewModel::selectDefenseAction
+            )
+        }
 
         if (state.selectedAction != DefenseAction.RAISE) {
-            item{
+            item {
                 PositionSelector(
                     title = "Позиция оппонента:",
                     selectedPosition = state.opponentPosition,
@@ -108,11 +128,11 @@ fun ChartControls(viewModel: ChartsViewModel = hiltViewModel()) {
 
 private fun getValidOpponentPositions(
     heroPosition: Position,
-    action: DefenseAction
+    action: DefenseAction,
 ): List<Position> {
     return when (action) {
         DefenseAction.RAISE -> {
-           emptyList()
+            emptyList()
         }
 
         DefenseAction.VS_RAISE -> {
@@ -122,30 +142,49 @@ private fun getValidOpponentPositions(
                 Position.CO -> listOf(Position.UTG, Position.MP)
                 Position.BTN -> listOf(Position.UTG, Position.MP, Position.CO)
                 Position.SB -> listOf(Position.UTG, Position.MP, Position.CO, Position.BTN)
-                Position.BB -> listOf(Position.UTG, Position.MP, Position.CO, Position.BTN, Position.SB)
+                Position.BB -> listOf(
+                    Position.UTG,
+                    Position.MP,
+                    Position.CO,
+                    Position.BTN,
+                    Position.SB
+                )
             }
         }
 
         DefenseAction.VS_3BET -> {
             when (heroPosition) {
-                Position.UTG -> listOf( Position.MP, Position.CO, Position.BTN, Position.SB, Position.BB)
-                Position.MP -> listOf( Position.CO, Position.BTN, Position.SB, Position.BB)
-                Position.CO -> listOf( Position.BTN, Position.SB, Position.BB)
-                Position.BTN -> listOf( Position.SB, Position.BB)
+                Position.UTG -> listOf(
+                    Position.MP,
+                    Position.CO,
+                    Position.BTN,
+                    Position.SB,
+                    Position.BB
+                )
+
+                Position.MP -> listOf(Position.CO, Position.BTN, Position.SB, Position.BB)
+                Position.CO -> listOf(Position.BTN, Position.SB, Position.BB)
+                Position.BTN -> listOf(Position.SB, Position.BB)
                 Position.SB -> listOf(Position.BB)
                 Position.BB -> emptyList()
             }
         }
 
-       DefenseAction.VS_4BET -> {
-           when (heroPosition) {
-               Position.UTG -> emptyList()
-               Position.MP -> listOf(Position.UTG)
-               Position.CO -> listOf(Position.UTG, Position.MP)
-               Position.BTN -> listOf(Position.UTG, Position.MP, Position.CO)
-               Position.SB -> listOf(Position.UTG, Position.MP, Position.CO, Position.BTN)
-               Position.BB -> listOf(Position.UTG, Position.MP, Position.CO, Position.BTN, Position.SB)
-           }
+        DefenseAction.VS_4BET -> {
+            when (heroPosition) {
+                Position.UTG -> emptyList()
+                Position.MP -> listOf(Position.UTG)
+                Position.CO -> listOf(Position.UTG, Position.MP)
+                Position.BTN -> listOf(Position.UTG, Position.MP, Position.CO)
+                Position.SB -> listOf(Position.UTG, Position.MP, Position.CO, Position.BTN)
+                Position.BB -> listOf(
+                    Position.UTG,
+                    Position.MP,
+                    Position.CO,
+                    Position.BTN,
+                    Position.SB
+                )
+            }
         }
 
     }
