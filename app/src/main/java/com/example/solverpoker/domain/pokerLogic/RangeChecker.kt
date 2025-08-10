@@ -1,6 +1,6 @@
 package com.example.solverpoker.domain.pokerLogic
 
-import com.example.solverpoker.data.RangeParser
+import com.example.solverpoker.data.parser.RangeParser
 
 
 class RangeChecker(private val rangeParser: RangeParser) {

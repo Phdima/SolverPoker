@@ -20,28 +20,31 @@ import com.example.solverpoker.presentation.components.ChartControls
 import com.example.solverpoker.presentation.components.PokerHandMatrix
 import com.example.solverpoker.presentation.stateholder.ChartScreenState
 import com.example.solverpoker.presentation.viewmodel.ChartsViewModel
-
+import com.example.solverpoker.presentation.viewmodel.HintViewModel
 
 
 @Composable
-fun PreflopChartScreen(viewModel: ChartsViewModel = hiltViewModel()) {
-    val state = viewModel.state.value
-    val hands = viewModel.getHandsForMatrix(state)
+fun PreflopChartScreen(
+    chartViewModel: ChartsViewModel = hiltViewModel(),
+    hintViewModel: HintViewModel = hiltViewModel(),
+) {
+    val state = chartViewModel.state.value
+    val hands = chartViewModel.getHandsForMatrix(state)
 
-        Column(
-            Modifier
-                .fillMaxSize()
-                .background(color = MaterialTheme.colorScheme.background)
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.background)
 
-        ) {
+    ) {
 
-            PokerHandMatrix(
-                handActions = hands,
-                modifier = Modifier
-            )
+        PokerHandMatrix(
+            handActions = hands,
+            modifier = Modifier
+        )
 
-            ChartControls()
-        }
+        ChartControls()
+    }
 
 }
 

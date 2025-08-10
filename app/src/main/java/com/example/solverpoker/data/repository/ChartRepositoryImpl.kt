@@ -2,7 +2,7 @@ package com.example.solverpoker.data.repository
 
 import android.content.Context
 import android.util.Log
-import com.example.solverpoker.data.RangeParser
+import com.example.solverpoker.data.parser.RangeParser
 import com.example.solverpoker.domain.pokerLogic.Action
 import com.example.solverpoker.domain.pokerLogic.Position
 import com.example.solverpoker.domain.pokerLogic.RangeChart

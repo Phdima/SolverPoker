@@ -4,7 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.solverpoker.data.RangeParser
+import com.example.solverpoker.data.parser.RangeParser
 import com.example.solverpoker.domain.pokerLogic.Action
 import com.example.solverpoker.domain.pokerLogic.CardRank
 import com.example.solverpoker.domain.pokerLogic.Deck

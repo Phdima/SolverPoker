@@ -1,6 +1,6 @@
 package com.example.solverpoker
 
-import com.example.solverpoker.data.RangeParser
+import com.example.solverpoker.data.parser.RangeParser
 import com.example.solverpoker.domain.pokerLogic.PokerHand
 import com.example.solverpoker.domain.pokerLogic.RangeChecker
 import junit.framework.TestCase.assertFalse

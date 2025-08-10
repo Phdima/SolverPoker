@@ -33,15 +33,18 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.solverpoker.domain.pokerLogic.Action
 import com.example.solverpoker.domain.pokerLogic.displaySymbol
 import com.example.solverpoker.presentation.components.PlayerProfile
+import com.example.solverpoker.presentation.viewmodel.HintViewModel
 import com.example.solverpoker.presentation.viewmodel.TrainerViewModel
-import kotlinx.coroutines.delay
 
 @Composable
-fun TrainerScreen(viewModel: TrainerViewModel = hiltViewModel()) {
+fun TrainerScreen(
+    trainerViewModel: TrainerViewModel = hiltViewModel(),
+    hintViewModel: HintViewModel = hiltViewModel()
+) {
 
 
-    val gameState by viewModel.gameState.collectAsState()
-    val isDealing by viewModel.isDealing.collectAsState()
+    val gameState by trainerViewModel.gameState.collectAsState()
+    val isDealing by trainerViewModel.isDealing.collectAsState()
 
     val lastAggressiveActionBeforeHero = remember(gameState) {
         gameState.players
@@ -85,7 +88,7 @@ fun TrainerScreen(viewModel: TrainerViewModel = hiltViewModel()) {
         val foldCount = gameState.players.count { it.action == Action.FOLD }
         val heroChoice = gameState.players.filter { it.isHero }.any { it.action == Action.FOLD }
 
-        callExists || foldCount == 5 || viewModel.answerResult.value == false || heroChoice
+        callExists || foldCount == 5 || trainerViewModel.answerResult.value == false || heroChoice
     }
 
     val colorScheme = MaterialTheme.colorScheme
@@ -100,12 +103,12 @@ fun TrainerScreen(viewModel: TrainerViewModel = hiltViewModel()) {
         }
     }
 
-    val feedbackMessage by viewModel.feedbackMessage.collectAsState()
+    val feedbackMessage by trainerViewModel.feedbackMessage.collectAsState()
 
 
 
     LaunchedEffect(Unit) {
-        viewModel.dealAnimation()
+        trainerViewModel.dealAnimation()
     }
 
 
@@ -157,16 +160,15 @@ fun TrainerScreen(viewModel: TrainerViewModel = hiltViewModel()) {
                         isDealing = isDealing,
 
 
-                    )
+                        )
                     PlayerProfile(
                         modifier = Modifier
                             .size(playerSize),
                         player = gameState.players[1],
-                        color = colorForProfileBorder[1]
-                        ,
+                        color = colorForProfileBorder[1],
                         isDealing = isDealing,
 
-                    )
+                        )
                 }
                 Column(
                     modifier = Modifier
@@ -181,7 +183,7 @@ fun TrainerScreen(viewModel: TrainerViewModel = hiltViewModel()) {
                         color = colorForProfileBorder[4],
                         isDealing = isDealing,
 
-                    )
+                        )
                     PlayerProfile(
                         modifier = Modifier
                             .size(playerSize),
@@ -189,7 +191,7 @@ fun TrainerScreen(viewModel: TrainerViewModel = hiltViewModel()) {
                         color = colorForProfileBorder[5],
                         isDealing = isDealing,
 
-                    )
+                        )
                 }
                 PlayerProfile(
                     modifier = Modifier
@@ -199,7 +201,7 @@ fun TrainerScreen(viewModel: TrainerViewModel = hiltViewModel()) {
                     color = colorForProfileBorder[3],
                     isDealing = isDealing,
 
-                )
+                    )
                 PlayerProfile(
                     modifier = Modifier
                         .size(playerSize)
@@ -208,7 +210,7 @@ fun TrainerScreen(viewModel: TrainerViewModel = hiltViewModel()) {
                     color = colorForProfileBorder[0],
                     isDealing = isDealing,
 
-                )
+                    )
             }
 
 
@@ -216,7 +218,7 @@ fun TrainerScreen(viewModel: TrainerViewModel = hiltViewModel()) {
         feedbackMessage?.let {
             Text(
                 text = it,
-                color = when (viewModel.answerResult.value) {
+                color = when (trainerViewModel.answerResult.value) {
                     true -> MaterialTheme.colorScheme.secondary
                     false -> Color.Red
                     else -> Color.Gray
@@ -243,8 +245,8 @@ fun TrainerScreen(viewModel: TrainerViewModel = hiltViewModel()) {
             Row {
                 TextButton(
                     onClick = {
-                        viewModel.selectAction(heroAggressiveAction)
-                        viewModel.checkAnswer()
+                        trainerViewModel.selectAction(heroAggressiveAction)
+                        trainerViewModel.checkAnswer()
                     },
                     enabled = !hasCallOrFold,
                     colors = ButtonColors(
@@ -264,8 +266,8 @@ fun TrainerScreen(viewModel: TrainerViewModel = hiltViewModel()) {
 
                 TextButton(
                     onClick = {
-                        viewModel.selectAction(Action.CALL)
-                        viewModel.checkAnswer()
+                        trainerViewModel.selectAction(Action.CALL)
+                        trainerViewModel.checkAnswer()
                     },
                     colors = ButtonColors(
                         containerColor = MaterialTheme.colorScheme.secondary,
@@ -281,8 +283,8 @@ fun TrainerScreen(viewModel: TrainerViewModel = hiltViewModel()) {
 
                 TextButton(
                     onClick = {
-                        viewModel.selectAction(Action.FOLD)
-                        viewModel.checkAnswer()
+                        trainerViewModel.selectAction(Action.FOLD)
+                        trainerViewModel.checkAnswer()
                     },
                     colors = ButtonColors(
                         containerColor = MaterialTheme.colorScheme.secondary,
@@ -298,7 +300,7 @@ fun TrainerScreen(viewModel: TrainerViewModel = hiltViewModel()) {
 
                 TextButton(
                     onClick = {
-                        viewModel.startNewHand()
+                        trainerViewModel.startNewHand()
                     },
                     colors = ButtonColors(
                         containerColor = MaterialTheme.colorScheme.secondary,
