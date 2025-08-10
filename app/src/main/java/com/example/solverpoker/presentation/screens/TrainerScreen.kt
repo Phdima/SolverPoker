@@ -18,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -33,10 +34,15 @@ import com.example.solverpoker.domain.pokerLogic.Action
 import com.example.solverpoker.domain.pokerLogic.displaySymbol
 import com.example.solverpoker.presentation.components.PlayerProfile
 import com.example.solverpoker.presentation.viewmodel.TrainerViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun TrainerScreen(viewModel: TrainerViewModel = hiltViewModel()) {
+
+
     val gameState by viewModel.gameState.collectAsState()
+    val isDealing by viewModel.isDealing.collectAsState()
+
     val lastAggressiveActionBeforeHero = remember(gameState) {
         gameState.players
             .filter {
@@ -96,6 +102,13 @@ fun TrainerScreen(viewModel: TrainerViewModel = hiltViewModel()) {
 
     val feedbackMessage by viewModel.feedbackMessage.collectAsState()
 
+
+
+    LaunchedEffect(Unit) {
+        viewModel.dealAnimation()
+    }
+
+
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
@@ -139,14 +152,20 @@ fun TrainerScreen(viewModel: TrainerViewModel = hiltViewModel()) {
                     PlayerProfile(
                         modifier = Modifier
                             .size(playerSize),
-                        player = gameState.players[5],
-                        color = colorForProfileBorder[5]
+                        player = gameState.players[2],
+                        color = colorForProfileBorder[2],
+                        isDealing = isDealing,
+
+
                     )
                     PlayerProfile(
                         modifier = Modifier
                             .size(playerSize),
-                        player = gameState.players[4],
-                        color = colorForProfileBorder[4]
+                        player = gameState.players[1],
+                        color = colorForProfileBorder[1]
+                        ,
+                        isDealing = isDealing,
+
                     )
                 }
                 Column(
@@ -158,29 +177,37 @@ fun TrainerScreen(viewModel: TrainerViewModel = hiltViewModel()) {
                     PlayerProfile(
                         modifier = Modifier
                             .size(playerSize),
-                        player = gameState.players[1],
-                        color = colorForProfileBorder[1]
+                        player = gameState.players[4],
+                        color = colorForProfileBorder[4],
+                        isDealing = isDealing,
+
                     )
                     PlayerProfile(
                         modifier = Modifier
                             .size(playerSize),
-                        player = gameState.players[2],
-                        color = colorForProfileBorder[2]
+                        player = gameState.players[5],
+                        color = colorForProfileBorder[5],
+                        isDealing = isDealing,
+
                     )
                 }
                 PlayerProfile(
                     modifier = Modifier
                         .align(Alignment.TopCenter)
                         .size(playerSize),
-                    player = gameState.players[0],
-                    color = colorForProfileBorder[0]
+                    player = gameState.players[3],
+                    color = colorForProfileBorder[3],
+                    isDealing = isDealing,
+
                 )
                 PlayerProfile(
                     modifier = Modifier
                         .size(playerSize)
                         .align(Alignment.BottomCenter),
-                    player = gameState.players[3],
-                    color = colorForProfileBorder[3]
+                    player = gameState.players[0],
+                    color = colorForProfileBorder[0],
+                    isDealing = isDealing,
+
                 )
             }
 
