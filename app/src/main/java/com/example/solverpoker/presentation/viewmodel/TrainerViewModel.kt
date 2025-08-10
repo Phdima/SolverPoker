@@ -16,6 +16,7 @@ import com.example.solverpoker.domain.pokerLogic.RangeChecker
 import com.example.solverpoker.domain.pokerLogic.displaySymbol
 import com.example.solverpoker.domain.repository.ChartRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -31,10 +32,15 @@ class TrainerViewModel @Inject constructor(
 
     private val deck = Deck()
 
+    private val _isDealing = MutableStateFlow(true)
+    val isDealing: StateFlow<Boolean> = _isDealing
+
+
     private val rangeParser = RangeParser()
     private val rangeChecker = RangeChecker(rangeParser)
 
     private val _gameState = MutableStateFlow(createInitialGameState())
+    private var preSimulationState = _gameState.value
     val gameState: StateFlow<GameState> = _gameState
 
     private val _action = mutableStateOf<Action?>(null)
@@ -46,7 +52,6 @@ class TrainerViewModel @Inject constructor(
     private val _feedbackMessage = MutableStateFlow<String?>(null)
     val feedbackMessage: StateFlow<String?> = _feedbackMessage
 
-    private var preSimulationState = _gameState.value
 
     init {
         startNewHand()
@@ -54,16 +59,27 @@ class TrainerViewModel @Inject constructor(
 
     fun startNewHand() {
         viewModelScope.launch {
+
             _action.value = null
             _answerResult.value = null
             _feedbackMessage.value = null
             deck.resetAndShuffle()
             _gameState.value = _gameState.value.nextHand()
             val currentState = _gameState.value
+                  dealAnimation()
             _gameState.value = simulateUntilHeroPreflop(currentState)
+
             Timber.d("-------------------------------------------")
+
         }
 
+    }
+
+
+    suspend fun dealAnimation() {
+        _isDealing.value = true
+        delay(500)
+        _isDealing.value = false
     }
 
 
@@ -365,7 +381,7 @@ class TrainerViewModel @Inject constructor(
         }
     }
 
-    private suspend fun checkCorrectAnswer(preSimulationState: GameState,) {
+    private suspend fun checkCorrectAnswer(preSimulationState: GameState) {
         Timber.d("Checking correct answer...")
 
         // Находим последнего рейзера перед героем
@@ -434,12 +450,16 @@ class TrainerViewModel @Inject constructor(
                         val callRange = when (raiser?.action) {
                             Action.RAISE ->
                                 chart.vsOpenRaise?.get(opponentPosition)?.get(Action.CALL)
+
                             Action.THREE_BET ->
                                 chart.vsThreeBet?.get(opponentPosition)?.get(Action.CALL)
+
                             Action.FOUR_BET ->
                                 chart.vsFourBet?.get(opponentPosition)?.get(Action.CALL)
+
                             Action.PUSH ->
                                 chart.vsPush?.get(opponentPosition)?.get(Action.CALL)
+
                             else -> null
                         } ?: emptyList()
 
@@ -605,23 +625,16 @@ class TrainerViewModel @Inject constructor(
 
     private fun createInitialGameState(): GameState {
         val players = listOf(
-            Player(1, "Alice", 1000, cards = deck.drawCard(), position = Position.UTG),
+            Player(1, "HERO", 1000, cards = deck.drawCard(), position = Position.UTG,isHero = true),
             Player(2, "Bob", 1000, cards = deck.drawCard(), position = Position.MP),
             Player(3, "Charlie", 1000, cards = deck.drawCard(), position = Position.CO),
-            Player(
-                4,
-                "HERO",
-                1000,
-                cards = deck.drawCard(),
-                position = Position.BTN,
-                isHero = true
-            ),
+            Player(4, "Masha", 1000, cards = deck.drawCard(), position = Position.BTN, ),
             Player(5, "Sasha", 1000, cards = deck.drawCard(), position = Position.SB),
-            Player(6, "Masha", 1000, cards = deck.drawCard(), position = Position.BB)
+            Player(6, "Alice", 1000, cards = deck.drawCard(), position = Position.BB, )
         )
         return GameState(
             players = players,
-            dealerPosition = 0,
+            dealerPosition = 3,
             currentPlayerIndex = 0,
             pot = 0,
             deck = deck
