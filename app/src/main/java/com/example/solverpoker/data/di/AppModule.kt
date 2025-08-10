@@ -1,7 +1,9 @@
 package com.example.solverpoker.data.di
 
 import android.content.Context
-import com.example.solverpoker.data.RangeParser
+import com.example.solverpoker.data.parser.RangeParser
+import com.example.solverpoker.data.preferences.AppPreferences
+import com.example.solverpoker.data.preferences.dataStore
 import com.example.solverpoker.data.repository.ChartRepositoryImpl
 import com.example.solverpoker.domain.repository.ChartRepository
 import com.squareup.moshi.Moshi
@@ -17,6 +19,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+
     @Provides
     @Singleton
     fun provideChartRepository(
@@ -32,5 +35,11 @@ object AppModule {
         return Moshi.Builder()
             .add(KotlinJsonAdapterFactory())
             .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAppPreferences(@ApplicationContext context: Context): AppPreferences {
+        return AppPreferences(context.dataStore)
     }
 }

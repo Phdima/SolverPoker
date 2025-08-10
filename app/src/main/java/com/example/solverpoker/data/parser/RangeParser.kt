@@ -1,4 +1,4 @@
-package com.example.solverpoker.data
+package com.example.solverpoker.data.parser
 
 class RangeParser {
     private val pairRegex = Regex("(\\d{2}|[TJQKA]{2})\\+?")             // 22+, TT+

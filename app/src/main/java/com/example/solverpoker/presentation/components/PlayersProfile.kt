@@ -167,7 +167,7 @@ fun PlayerProfile(
                             modifier = Modifier
                                 .height(80.dp)
                                 .width(50.dp)
-                                .offset(x = -card1Offset)
+                                //.offset(x = -card1Offset)
                                 .offset(x = cardsFoldAnimation)
                                 .offset(y = -offsetY.value)
                         )
@@ -177,7 +177,7 @@ fun PlayerProfile(
                             modifier = Modifier
                                 .height(80.dp)
                                 .width(50.dp)
-                                .offset(x = card2Offset)
+                                //.offset(x = card2Offset)
                                 .offset(x = cardsFoldAnimation)
                                 .offset(y = -offsetY.value)
                         )

@@ -1,7 +1,7 @@
 package com.example.solverpoker
 
 import android.app.Application
-import com.example.solverpoker.data.RangeParser
+import com.example.solverpoker.data.parser.RangeParser
 import com.example.solverpoker.data.repository.ChartRepositoryImpl
 import com.example.solverpoker.domain.repository.ChartRepository
 import com.squareup.moshi.Moshi
