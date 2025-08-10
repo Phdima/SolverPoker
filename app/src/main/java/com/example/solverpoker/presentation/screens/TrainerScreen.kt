@@ -154,7 +154,7 @@ fun TrainerScreen(
                 ) {
                     PlayerProfile(
                         modifier = Modifier
-                            .size(playerSize),
+                           ,
                         player = gameState.players[2],
                         color = colorForProfileBorder[2],
                         isDealing = isDealing,
@@ -163,7 +163,7 @@ fun TrainerScreen(
                         )
                     PlayerProfile(
                         modifier = Modifier
-                            .size(playerSize),
+                       ,
                         player = gameState.players[1],
                         color = colorForProfileBorder[1],
                         isDealing = isDealing,
@@ -178,7 +178,7 @@ fun TrainerScreen(
                 ) {
                     PlayerProfile(
                         modifier = Modifier
-                            .size(playerSize),
+                        ,
                         player = gameState.players[4],
                         color = colorForProfileBorder[4],
                         isDealing = isDealing,
@@ -186,7 +186,7 @@ fun TrainerScreen(
                         )
                     PlayerProfile(
                         modifier = Modifier
-                            .size(playerSize),
+                        ,
                         player = gameState.players[5],
                         color = colorForProfileBorder[5],
                         isDealing = isDealing,
@@ -196,7 +196,7 @@ fun TrainerScreen(
                 PlayerProfile(
                     modifier = Modifier
                         .align(Alignment.TopCenter)
-                        .size(playerSize),
+                     ,
                     player = gameState.players[3],
                     color = colorForProfileBorder[3],
                     isDealing = isDealing,
@@ -204,7 +204,7 @@ fun TrainerScreen(
                     )
                 PlayerProfile(
                     modifier = Modifier
-                        .size(playerSize)
+
                         .align(Alignment.BottomCenter),
                     player = gameState.players[0],
                     color = colorForProfileBorder[0],
