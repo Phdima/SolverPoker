@@ -43,6 +43,10 @@ android {
 
 dependencies {
 
+
+    //YandexAds
+    implementation (libs.mobileads)
+
     //navigation
     implementation (libs.androidx.navigation.compose)
 
