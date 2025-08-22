@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.solverpoker.domain.pokerLogic.Action
 import com.example.solverpoker.domain.pokerLogic.displaySymbol
+import com.example.solverpoker.presentation.components.AdBanner
 import com.example.solverpoker.presentation.components.PlayerProfile
 import com.example.solverpoker.presentation.viewmodel.HintViewModel
 import com.example.solverpoker.presentation.viewmodel.TrainerViewModel
@@ -112,208 +113,206 @@ fun TrainerScreen(
     }
 
 
-    BoxWithConstraints(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = MaterialTheme.colorScheme.background)
-    ) {
-        val tableWidth = maxWidth * 0.9f
-        val tableHeight = maxHeight * 0.8f
+    Column(){
+        AdBanner()
+        BoxWithConstraints(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = MaterialTheme.colorScheme.background)
+        ) {
+            val tableWidth = maxWidth * 0.9f
+            val tableHeight = maxHeight * 0.8f
 
 
-        val playerSize = maxWidth * 0.4f
+            val playerSize = maxWidth * 0.4f
 
-        Box(
-            Modifier
-                .align(Alignment.TopCenter)
-                .size(tableWidth, tableHeight)
-                .padding(top = 5.dp)
-
-        )
-        {
             Box(
-                modifier = Modifier
+                Modifier
+                    .align(Alignment.TopCenter)
                     .size(tableWidth, tableHeight)
-                    .background(
-                        color = MaterialTheme.colorScheme.primary,
-                        shape = RoundedCornerShape(16.dp)
-                    )
-                    .border(
-                        width = 4.dp,
-                        color = MaterialTheme.colorScheme.secondaryContainer,
-                        shape = RoundedCornerShape(16.dp)
-                    )
+                    .padding(top = 5.dp)
 
             )
             {
-                Column(
+                Box(
                     modifier = Modifier
-                        .align(Alignment.CenterStart)
-                        .height(tableHeight),
-                    Arrangement.SpaceEvenly
-                ) {
+                        .size(tableWidth, tableHeight)
+                        .background(
+                            color = MaterialTheme.colorScheme.primary,
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .border(
+                            width = 4.dp,
+                            color = MaterialTheme.colorScheme.secondaryContainer,
+                            shape = RoundedCornerShape(16.dp)
+                        )
+
+                )
+                {
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.CenterStart)
+                            .height(tableHeight),
+                        Arrangement.SpaceEvenly
+                    ) {
+                        PlayerProfile(
+                            modifier = Modifier,
+                            player = gameState.players[2],
+                            color = colorForProfileBorder[2],
+                            isDealing = isDealing,
+
+
+                            )
+                        PlayerProfile(
+                            modifier = Modifier,
+                            player = gameState.players[1],
+                            color = colorForProfileBorder[1],
+                            isDealing = isDealing,
+
+                            )
+                    }
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .height(tableHeight),
+                        Arrangement.SpaceEvenly
+                    ) {
+                        PlayerProfile(
+                            modifier = Modifier,
+                            player = gameState.players[4],
+                            color = colorForProfileBorder[4],
+                            isDealing = isDealing,
+
+                            )
+                        PlayerProfile(
+                            modifier = Modifier,
+                            player = gameState.players[5],
+                            color = colorForProfileBorder[5],
+                            isDealing = isDealing,
+
+                            )
+                    }
                     PlayerProfile(
                         modifier = Modifier
-                           ,
-                        player = gameState.players[2],
-                        color = colorForProfileBorder[2],
+                            .align(Alignment.TopCenter),
+                        player = gameState.players[3],
+                        color = colorForProfileBorder[3],
                         isDealing = isDealing,
-
 
                         )
                     PlayerProfile(
                         modifier = Modifier
-                       ,
-                        player = gameState.players[1],
-                        color = colorForProfileBorder[1],
+
+                            .align(Alignment.BottomCenter),
+                        player = gameState.players[0],
+                        color = colorForProfileBorder[0],
                         isDealing = isDealing,
 
                         )
                 }
-                Column(
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .height(tableHeight),
-                    Arrangement.SpaceEvenly
-                ) {
-                    PlayerProfile(
-                        modifier = Modifier
-                        ,
-                        player = gameState.players[4],
-                        color = colorForProfileBorder[4],
-                        isDealing = isDealing,
 
-                        )
-                    PlayerProfile(
-                        modifier = Modifier
-                        ,
-                        player = gameState.players[5],
-                        color = colorForProfileBorder[5],
-                        isDealing = isDealing,
 
-                        )
-                }
-                PlayerProfile(
-                    modifier = Modifier
-                        .align(Alignment.TopCenter)
-                     ,
-                    player = gameState.players[3],
-                    color = colorForProfileBorder[3],
-                    isDealing = isDealing,
-
-                    )
-                PlayerProfile(
-                    modifier = Modifier
-
-                        .align(Alignment.BottomCenter),
-                    player = gameState.players[0],
-                    color = colorForProfileBorder[0],
-                    isDealing = isDealing,
-
-                    )
             }
-
-
-        }
-        feedbackMessage?.let {
-            Text(
-                text = it,
-                color = when (trainerViewModel.answerResult.value) {
-                    true -> MaterialTheme.colorScheme.secondary
-                    false -> Color.Red
-                    else -> Color.Gray
-                },
+            feedbackMessage?.let {
+                Text(
+                    text = it,
+                    color = when (trainerViewModel.answerResult.value) {
+                        true -> MaterialTheme.colorScheme.secondary
+                        false -> Color.Red
+                        else -> Color.Gray
+                    },
+                    modifier = Modifier
+                        .align(Alignment.TopCenter) // Выравниваем по верхнему центру
+                        .fillMaxWidth(0.9f) // Занимаем 90% ширины
+                        .padding(top = tableHeight * 1.01f) // Отступ ниже стола
+                        .background(
+                            MaterialTheme.colorScheme.primary,
+                            shape = RoundedCornerShape(size = 40.dp)
+                        ),
+                    textAlign = TextAlign.Center
+                )
+            }
+            Column(
                 modifier = Modifier
-                    .align(Alignment.TopCenter) // Выравниваем по верхнему центру
-                    .fillMaxWidth(0.9f) // Занимаем 90% ширины
-                    .padding(top = tableHeight * 1.01f) // Отступ ниже стола
-                    .background(
-                        MaterialTheme.colorScheme.primary,
-                        shape = RoundedCornerShape(size = 40.dp)
-                    ),
-                textAlign = TextAlign.Center
-            )
-        }
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 20.dp)
-        ) {
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 20.dp)
+            ) {
 
-            // DebugPositionView()
+                // DebugPositionView()
 
-            Row {
-                TextButton(
-                    onClick = {
-                        trainerViewModel.selectAction(heroAggressiveAction)
-                        trainerViewModel.checkAnswer()
-                    },
-                    enabled = !hasCallOrFold,
-                    colors = ButtonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                        disabledContentColor = MaterialTheme.colorScheme.onPrimary,
-                        disabledContainerColor = MaterialTheme.colorScheme.primary
-                    ),
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(
-                        actionText,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                Row {
+                    TextButton(
+                        onClick = {
+                            trainerViewModel.selectAction(heroAggressiveAction)
+                            trainerViewModel.checkAnswer()
+                        },
+                        enabled = !hasCallOrFold,
+                        colors = ButtonColors(
+                            containerColor = MaterialTheme.colorScheme.secondary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary,
+                            disabledContentColor = MaterialTheme.colorScheme.onPrimary,
+                            disabledContainerColor = MaterialTheme.colorScheme.primary
+                        ),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            actionText,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+
+                    TextButton(
+                        onClick = {
+                            trainerViewModel.selectAction(Action.CALL)
+                            trainerViewModel.checkAnswer()
+                        },
+                        colors = ButtonColors(
+                            containerColor = MaterialTheme.colorScheme.secondary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary,
+                            disabledContentColor = MaterialTheme.colorScheme.onPrimary,
+                            disabledContainerColor = MaterialTheme.colorScheme.primary
+                        ),
+                        enabled = !hasCallOrFold && hasAggressiveAction,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Call", maxLines = 1)
+                    }
+
+                    TextButton(
+                        onClick = {
+                            trainerViewModel.selectAction(Action.FOLD)
+                            trainerViewModel.checkAnswer()
+                        },
+                        colors = ButtonColors(
+                            containerColor = MaterialTheme.colorScheme.secondary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary,
+                            disabledContentColor = MaterialTheme.colorScheme.onPrimary,
+                            disabledContainerColor = MaterialTheme.colorScheme.primary
+                        ),
+                        enabled = !hasCallOrFold,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Fold", maxLines = 1)
+                    }
+
+                    TextButton(
+                        onClick = {
+                            trainerViewModel.startNewHand()
+                        },
+                        colors = ButtonColors(
+                            containerColor = MaterialTheme.colorScheme.secondary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary,
+                            disabledContentColor = MaterialTheme.colorScheme.onPrimary,
+                            disabledContainerColor = MaterialTheme.colorScheme.primary
+                        ),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Next", maxLines = 1)
+                    }
                 }
 
-                TextButton(
-                    onClick = {
-                        trainerViewModel.selectAction(Action.CALL)
-                        trainerViewModel.checkAnswer()
-                    },
-                    colors = ButtonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                        disabledContentColor = MaterialTheme.colorScheme.onPrimary,
-                        disabledContainerColor = MaterialTheme.colorScheme.primary
-                    ),
-                    enabled = !hasCallOrFold && hasAggressiveAction,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text("Call", maxLines = 1)
-                }
-
-                TextButton(
-                    onClick = {
-                        trainerViewModel.selectAction(Action.FOLD)
-                        trainerViewModel.checkAnswer()
-                    },
-                    colors = ButtonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                        disabledContentColor = MaterialTheme.colorScheme.onPrimary,
-                        disabledContainerColor = MaterialTheme.colorScheme.primary
-                    ),
-                    enabled = !hasCallOrFold,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text("Fold", maxLines = 1)
-                }
-
-                TextButton(
-                    onClick = {
-                        trainerViewModel.startNewHand()
-                    },
-                    colors = ButtonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                        disabledContentColor = MaterialTheme.colorScheme.onPrimary,
-                        disabledContainerColor = MaterialTheme.colorScheme.primary
-                    ),
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text("Next", maxLines = 1)
-                }
             }
-
         }
     }
 }

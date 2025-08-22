@@ -3,6 +3,7 @@ package com.example.solverpoker.presentation.activity
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.ViewTreeObserver
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,16 +17,22 @@ import com.example.solverpoker.presentation.screens.PreflopChartScreen
 import com.example.solverpoker.presentation.screens.TitleScreen
 import com.example.solverpoker.presentation.screens.TrainerScreen
 import com.example.solverpoker.presentation.theme.SolverPokerTheme
+import com.yandex.mobile.ads.banner.BannerAdEventListener
+import com.yandex.mobile.ads.banner.BannerAdSize
+import com.yandex.mobile.ads.banner.BannerAdView
+import com.yandex.mobile.ads.common.AdRequest
+import com.yandex.mobile.ads.common.AdRequestError
+import com.yandex.mobile.ads.common.ImpressionData
 import dagger.hilt.android.AndroidEntryPoint
+import kotlin.math.roundToInt
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
 
+        super.onCreate(savedInstanceState)
         window.setDecorFitsSystemWindows(false)
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
@@ -57,6 +64,8 @@ class MainActivity : ComponentActivity() {
 
             }
         }
+
+
     }
 }
 
