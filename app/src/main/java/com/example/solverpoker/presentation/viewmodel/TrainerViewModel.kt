@@ -64,6 +64,8 @@ class TrainerViewModel @Inject constructor(
             _answerResult.value = null
             _feedbackMessage.value = null
             deck.resetAndShuffle()
+            _gameState.value.handPlayed++
+            println("Hand played: ${gameState.value.handPlayed}")
             _gameState.value = _gameState.value.nextHand()
             val currentState = _gameState.value
                   dealAnimation()

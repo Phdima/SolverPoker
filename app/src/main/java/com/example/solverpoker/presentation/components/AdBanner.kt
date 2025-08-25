@@ -21,7 +21,7 @@ fun AdBanner() {
     val screenWidthDp = configuration.screenWidthDp
     val adView = remember {
         BannerAdView(context).apply {
-            setAdUnitId("demo-banner-yandex")
+            setAdUnitId("R-M-16913722-1")
             setAdSize(BannerAdSize.stickySize(context,screenWidthDp))
         }
     }
@@ -31,7 +31,7 @@ fun AdBanner() {
         adView.loadAd(AdRequest.Builder().build())
     }
 
-    // Очистка при выходе из композиции
+
     DisposableEffect(Unit) {
         onDispose {
             adView.destroy()
