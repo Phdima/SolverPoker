@@ -5,6 +5,7 @@ data class GameState(
     val deck: Deck,
     val dealerPosition: Int, // Индекс дилера
     val currentPlayerIndex: Int,
+    var handPlayed: Int = 0,
     val pot: Int,
     val smallBlindAmount: Int = 10,
     val bigBlindAmount: Int = 20
